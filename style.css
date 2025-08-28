@@ -1,0 +1,463 @@
+/* Reset & basics */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #001d3d 0%, #000814 100%);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #0077b6;
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+}
+
+#start-screen {
+  margin-top: 30vh; /* push content down */
+  text-align: center;
+  z-index: 1;
+  position: relative;
+}
+
+h1 {
+  font-size: 5rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  user-select: none;
+}
+
+#rules-screen {
+  margin-top: 15vh;
+  text-align: center;
+  z-index: 1;
+  position: relative;
+}
+
+#rules-title {
+  font-size: 3rem; /* Not as large as Go Fish title */
+  font-weight: bold;
+  margin-bottom: 2.5rem;
+  color: #0077b6;
+  user-select: none;
+}
+
+#rules-list {
+  color: #b0e0ff;
+  font-size: 1.4rem;
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: left;
+  list-style-type: disc;
+  line-height: 2.2rem;
+  padding-left: 2rem;
+}
+
+#bubble-container,
+#seagrass-container,
+#fishing-line-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -10; /* or lower */
+}
+
+/* Style for each bubble */
+.bubble {
+  position: absolute;
+  bottom: -100px;
+  border: 2px solid rgba(173, 216, 230, 0.4);
+  border-radius: 50%;
+  background: rgba(173, 216, 230, 0.08);
+  box-shadow: 0 0 10px rgba(173, 216, 230, 0.2);
+  backdrop-filter: blur(1px);
+  mix-blend-mode: screen;
+  animation: floatUp linear;
+}
+
+@keyframes floatUp {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-120vh);
+    opacity: 0;
+  }
+}
+
+/* Each grass blade */
+.grass-blade {
+  position: absolute;
+  bottom: 0;
+  width: 12px; /* broader base */
+  height: 80vh; /* up to 80% of screen height */
+  background: linear-gradient(to top, rgba(0, 255, 100, 0.25), rgba(0, 255, 100, 0.1));
+  border-radius: 0 50% 50% 0 / 0 100% 100% 0; /* curved right edge */
+  clip-path: polygon(50% 0%, 100% 10%, 100% 100%, 0% 100%, 0% 10%); /* makes the top taper */
+  transform-origin: bottom center;
+  animation: sway ease-in-out infinite;
+  opacity: 0.4;
+}
+
+/* Keyframes for swaying side to side */
+@keyframes sway {
+  0%   { transform: rotate(0deg); }
+  50%  { transform: rotate(4deg); }
+  100% { transform: rotate(0deg); }
+}
+
+#title span {
+  display: inline-block;
+  animation: wave 1.5s ease-in-out infinite;
+}
+
+/* Add delay to each letter to create wave effect */
+#title span:nth-child(1) { animation-delay: 0s; }
+#title span:nth-child(2) { animation-delay: 0.15s; }
+#title span:nth-child(3) { animation-delay: 0.3s; }
+#title span:nth-child(4) { animation-delay: 0.45s; }
+#title span:nth-child(5) { animation-delay: 0.6s; }
+#title span:nth-child(6) { animation-delay: 0.75s; }
+
+/* Keyframes for vertical wave movement */
+@keyframes wave {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px); /* move up */
+  }
+}
+
+/* Button container for side-by-side layout */
+.button-container {
+  display: flex;
+  justify-content: center;
+  background-color: transparent;
+  gap: 2rem;
+  align-items: baseline;
+}
+
+/* Button styling */
+.glow-btn {
+  padding: 1rem 3rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  color: white;
+  background-color: #0096c7; /* base blue */
+  box-shadow: 0 0 10px rgba(0, 150, 199, 0.6);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
+  user-select: none;
+}
+
+.glow-btn:hover {
+  box-shadow: 0 0 20px rgba(38, 198, 218, 0.9);
+  background-color: #00b4d8;
+  transform: scale(1.05);
+}
+
+.glow-btn:active {
+  background-color: #0077b6; /* darker blue on click */
+  box-shadow: 0 0 8px rgba(0, 118, 168, 0.7);
+  transform: scale(0.98);
+  outline: none;
+}
+
+/* Remove focus outline */
+.glow-btn:focus {
+  outline: none;
+}
+
+.fade {
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+
+.fade.hidden {
+  opacity: 0;
+}
+
+#options-screen, 
+#game-screen {
+  margin-top: 3vh; /* or adjust to 20vh or more for greater spacing */
+  text-align: center;
+  z-index: 1;
+  position: relative;
+}
+
+#game-screen {
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Match Options styles */
+#options-title {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 2.5rem;
+  color: #0077b6;
+  user-select: none;
+}
+
+.option-group {
+  margin: 2rem auto;
+  text-align: center;
+}
+
+.option-label {
+  font-size: 1.6rem;
+  color: #b0e0ff;
+  margin-bottom: 0.5rem;
+}
+
+#player-slider {
+  width: 60%;
+  margin-top: 0.5rem;
+}
+
+.option-value {
+  font-size: 1.8rem;
+  margin-top: 0.5rem;
+  color: #90e0ef;
+}
+
+/* Slightly bigger font and brighter background for Go button */
+.go-btn {
+  font-size: 2rem; /* bigger than 1.5rem */
+  background-color: #00b4d8; /* brighter blue */
+  box-shadow: 0 0 15px rgba(0, 180, 216, 0.9);
+  animation: glowBreath 3s ease-in-out infinite;
+}
+
+.go-btn:hover {
+  background-color: #00d0f0; /* even brighter on hover */
+  box-shadow: 0 0 25px rgba(0, 208, 240, 1);
+  transform: scale(1.07);
+}
+
+.go-btn:active {
+  background-color: #008db5; /* darker on click */
+  box-shadow: 0 0 10px rgba(0, 141, 181, 0.8);
+  transform: scale(0.95);
+}
+
+@keyframes glowBreath {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(0, 150, 199, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(38, 198, 218, 0.9);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(0, 150, 199, 0.6);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(38, 198, 218, 0.9);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(0, 150, 199, 0.6);
+  }
+}
+
+.toggle-btn-1 {
+  padding: 0.6rem 1.5rem;
+  font-size: 1.3rem;
+  border-radius: 8px;
+  background-color: #0077b6;
+  color: white;
+  border: 2px solid #0077b6;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* No / False state styling */
+.toggle-btn-1.false {
+  background-color: transparent;
+  color: transparent;
+  border: 2px solid #0077b6;
+  position: relative;
+}
+
+.toggle-btn-1.false::before {
+  content: "No";
+  color: #0077b6;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.toggle-btn-1:hover {
+  background-color: #0096c7;
+}
+
+.toggle-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.8rem;
+}
+
+.toggle-btn-2 {
+  padding: 0.6rem 1.5rem;
+  font-size: 1.3rem;
+  border: 2px solid #0077b6;
+  border-radius: 8px;
+  background-color: transparent;
+  color: #0077b6;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn-2:hover {
+  background-color: rgba(0, 119, 182, 0.1);
+}
+
+.toggle-btn-2.active {
+  background-color: #0077b6;
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(0, 119, 182, 0.5);
+}
+
+/* Menu icon button in top-left */
+#menu-btn.menu-icon {
+  position: absolute;
+  top: 0.6rem;
+  left: 1.5rem;
+  z-index: 10;
+  padding: 0.6rem 1rem;
+  font-size: 2rem;
+  line-height: 1;
+  background-color: transparent;
+  border: none;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Apply glow style when menu is active (via a class toggle) */
+#menu-btn.menu-open {
+  background-color: #0096c7;
+  box-shadow: 0 0 10px rgba(0, 150, 199, 0.6);
+  border-radius: 10px;
+}
+
+/* Menu Popup Overlay */
+#menu-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 13, 30, 0.95);
+  padding: 2rem 3rem;
+  border-radius: 16px;
+  box-shadow: 0 0 30px rgba(0, 119, 182, 0.6);
+  text-align: center;
+  z-index: 20;
+  transition: opacity 0.3s ease;
+}
+
+/* Close (X) Button inside popup */
+#close-menu-btn.close-btn {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  font-size: 1.3rem;
+  padding: 0.4rem 0.8rem;
+  background-color: #003049;
+}
+
+/* Buttons inside the menu */
+.menu-option {
+  display: block;
+  width: 100%;
+  margin: 1rem 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+#fish {
+  position: fixed;
+  width: 360px;           /* Bigger width (default was 80px) */
+  height: 180px;           /* Keep aspect ratio roughly */
+  top: 50vh;
+  left: 50vw;
+  pointer-events: none;
+  background: url('./assets/fish.png') no-repeat center/contain;
+  transition: 
+    transform 0.6s ease,
+    filter 3s ease,
+    opacity 3s ease,
+	 width 3s ease,
+    height 3s ease;
+  z-index: -9; /* behind buttons but above bubbles and grass */
+  opacity: 0.6;
+}
+
+#fishing-line {
+  position: absolute;
+  top: 0;
+  left: 20vw;
+  width: 5px;
+  height: 55vh;
+  background: rgba(128, 128, 128, 0.5);
+  filter: blur(0.8px);
+  opacity: 0.8;
+  transition: height 3s ease, left 1s ease;
+  transform-origin: top center;
+  animation: sway-top 14s ease-in-out infinite alternate;
+}
+
+#fishing-hook {
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-90%);
+  transform-origin: top center;
+  width: 25px;
+  height: 49px;
+  background: url('./assets/hook.png') no-repeat center/contain;
+  transition: transform 0.3s ease, opacity 0.5s ease, left 1s ease;
+  animation: hook-sway 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -8;
+}
+
+/* Top sways gently left and right */
+@keyframes sway-top {
+  0%   { transform: rotate(-5deg) translateX(0); }
+  50%  { transform: rotate(5deg) translateX(5px); }
+  100% { transform: rotate(-5deg) translateX(0); }
+}
+
+@keyframes hook-sway {
+  0%, 100% {
+    transform: translateX(-90%) rotate(-5deg);
+  }
+  50% {
+    transform: translateX(-90%) rotate(5deg);
+  }
+}
+

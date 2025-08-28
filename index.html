@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Go Fish</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div id="bubble-container"></div>
+  <div id="seagrass-container"></div>
+  <div id="fishing-line-container">
+	  <div id="fishing-line">
+		 <div id="fishing-hook"></div>
+	  </div>
+  </div>
+  <div id="fish"></div>
+  
+  <!-- Splash Screen -->
+  <div id="start-screen" class="fade">
+    <h1 id="title">
+      <span>G</span><span>o</span> <span>F</span><span>i</span><span>s</span><span>h</span><span>!</span>
+    </h1>
+    <div class="button-container">
+      <button class="glow-btn" id="play-btn">Play</button>
+      <button class="glow-btn" id="rules-btn">Rules</button>
+    </div>
+  </div>
+  
+  <!-- Rules Screen (initially hidden) -->
+	<div id="rules-screen" class="fade" style="display: none;">
+		<h2 id="rules-title">Rules</h2>
+		<ul id="rules-list">
+			<li>Each player starts with 5 cards.</li>
+			<li>Ask another player for a card rank you already have.</li>
+			<li>If they have it, you get all cards of that rank.</li>
+			<li>If not — “Go Fish!” — draw from the deck.</li>
+			<li>Make sets (4 of a kind) to score points.</li>
+			<li>When all sets are made, the game ends.</li>
+			<li>Player with most sets wins!</li>
+		</ul>
+		<div class="button-container" style="margin-top: 3rem;">
+			<button class="glow-btn" id="back-btn">Back</button>
+		</div>
+	</div>
+	
+	<!-- Match Options Screen (initially hidden) -->
+	<div id="options-screen" style="display: none;">
+	  <h2 id="options-title">Match Options</h2>
+
+	  <div class="option-group">
+		 <p class="option-label">Number of Players:</p>
+		 <input type="range" id="player-slider" min="1" max="6" value="4" />
+		 <div class="option-value" id="player-count">4</div>
+	  </div>
+
+	  <div class="option-group">
+		 <p class="option-label">Play with Bots?</p>
+		 <button class="toggle-btn-1" id="bot-toggle">Yes</button>
+	  </div>
+
+	  <div class="option-group">
+		  <p class="option-label">Select difficulty:</p>
+		  <div class="toggle-group" id="difficulty-toggle">
+			 <button class="toggle-btn-2 active">Easy</button>
+			 <button class="toggle-btn-2">Medium</button>
+			 <button class="toggle-btn-2">Hard</button>
+		  </div>
+	  </div>
+
+	  <div class="button-container" style="margin-top: 3rem;">
+		 <button class="glow-btn go-btn" id="go-btn">Go</button>
+		 <button class="glow-btn" id="back-to-splash-btn">Back</button>
+	  </div>
+	</div>
+  <script src="game.js"></script>
+</body>
+</html>
