@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8"/>
   <title>Go Fish</title>
-  <link rel="stylesheet" href="style.css"/>
+  
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Barrio&family=Walter+Turncoat&family=Slackey&family=Kranky&display=swap" rel="stylesheet">	
+	<link rel="stylesheet" href="style.css"/>
+
 </head>
 <body>
   <div id="bubble-container"></div>
@@ -14,10 +19,10 @@
 	  </div>
   </div>
   <div id="fish"></div>
-  
+  <!-- <img id="fish" src = "./assets/fish/fish2.png"/> -->
   <!-- Splash Screen -->
   <div id="start-screen" class="fade">
-    <h1 id="title">
+    <h1 class="title">
       <span>G</span><span>o</span> <span>F</span><span>i</span><span>s</span><span>h</span><span>!</span>
     </h1>
     <div class="button-container">
@@ -28,7 +33,7 @@
   
   <!-- Rules Screen (initially hidden) -->
 	<div id="rules-screen" class="fade" style="display: none;">
-		<h2 id="rules-title">Rules</h2>
+		<h2 id="rules-title" class="title">Rules</h2>
 		<ul id="rules-list">
 			<li>Each player starts with 5 cards.</li>
 			<li>Ask another player for a card rank you already have.</li>
@@ -45,11 +50,11 @@
 	
 	<!-- Match Options Screen (initially hidden) -->
 	<div id="options-screen" style="display: none;">
-	  <h2 id="options-title">Match Options</h2>
+	  <h2 id="options-title" class="title">Match Options</h2>
 
 	  <div class="option-group">
 		 <p class="option-label">Number of Players:</p>
-		 <input type="range" id="player-slider" min="1" max="6" value="4" />
+		 <input type="range" id="player-slider" min="2" max="6" value="4" />
 		 <div class="option-value" id="player-count">4</div>
 	  </div>
 
@@ -66,6 +71,18 @@
 			 <button class="toggle-btn-2">Hard</button>
 		  </div>
 	  </div>
+	  
+	  <div id="bot-naming-style-container">
+		  <label class="bot-naming-label">Bot Name Style</label>
+		  <button id="bot-naming-toggle" class="toggle-btn-2">
+				<span class="classic-label active">Fictional</span>
+				<span class="descriptive-label">Whimsical</span>
+		  </button>
+		</div>
+		
+		<div id="sound-toggle-container">
+		  <button id="sound-toggle-btn" class="icon-btn" title="Toggle Sound"></button>
+		</div>
 
 	  <div class="button-container" style="margin-top: 3rem;">
 		 <button class="glow-btn go-btn" id="go-btn">Go</button>

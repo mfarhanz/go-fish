@@ -1,6 +1,9 @@
 /* Reset & basics */
 * {
   box-sizing: border-box;
+  /* font-family: "Barrio", system-ui; */
+  /* font-family: "Kranky", serif; */
+  font-family: "Walter Turncoat", cursive;
   margin: 0;
   padding: 0;
 }
@@ -8,25 +11,16 @@
 html {
   height: 100%;
   overflow: hidden;
-  background: linear-gradient(to bottom, #001d3d 0%, #000814 100%);
 }
 
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
   color: #0077b6;
   display: flex;
   justify-content: center;
-  margin: 0;
-  padding: 0;
-}
-
-#start-screen {
-  margin-top: 30vh; /* push content down */
-  text-align: center;
-  z-index: 1;
-  position: relative;
+  background: linear-gradient(to bottom, #075359 0%, #0f0530 100%);
 }
 
 h1 {
@@ -34,6 +28,17 @@ h1 {
   font-weight: bold;
   margin-bottom: 2rem;
   user-select: none;
+}
+
+.title {
+	font-family: "Slackey", sans-serif;
+}
+
+#start-screen {
+  margin-top: 30vh; /* push content down */
+  text-align: center;
+  z-index: 1;
+  position: relative;
 }
 
 #rules-screen {
@@ -119,18 +124,19 @@ h1 {
   100% { transform: rotate(0deg); }
 }
 
-#title span {
+.title span {
   display: inline-block;
   animation: wave 1.5s ease-in-out infinite;
+  font-family: inherit;
 }
 
 /* Add delay to each letter to create wave effect */
-#title span:nth-child(1) { animation-delay: 0s; }
-#title span:nth-child(2) { animation-delay: 0.15s; }
-#title span:nth-child(3) { animation-delay: 0.3s; }
-#title span:nth-child(4) { animation-delay: 0.45s; }
-#title span:nth-child(5) { animation-delay: 0.6s; }
-#title span:nth-child(6) { animation-delay: 0.75s; }
+.title span:nth-child(1) { animation-delay: 0s; }
+.title span:nth-child(2) { animation-delay: 0.15s; }
+.title span:nth-child(3) { animation-delay: 0.3s; }
+.title span:nth-child(4) { animation-delay: 0.45s; }
+.title span:nth-child(5) { animation-delay: 0.6s; }
+.title span:nth-child(6) { animation-delay: 0.75s; }
 
 /* Keyframes for vertical wave movement */
 @keyframes wave {
@@ -227,14 +233,99 @@ h1 {
 }
 
 #player-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  background: transparent; /* Track color */
+  color: #0077b6;
+  border-radius: 10px;
+  border: 1px solid #0077b6;
   width: 60%;
   margin-top: 0.5rem;
+}
+
+/* Webkit (Chrome, Safari, Edge) */
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  height: 30px;
+  width: 30px;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 9px solid #0077b6;
 }
 
 .option-value {
   font-size: 1.8rem;
   margin-top: 0.5rem;
   color: #90e0ef;
+}
+
+#bot-naming-style-container {
+  position: absolute;
+  top: 45%;
+  left: 150%;
+  text-align: center;
+  user-select: none;
+  opacity: 1;
+  width: max-content;
+}
+
+.bot-naming-label {
+  display: block;
+  color: #b0e0ff;
+  margin-bottom: 0.5rem;
+  font-size: 1.6rem;
+}
+
+#bot-naming-toggle {
+  display: flex;
+  padding: 0 0;
+  font-size: 1.3rem;
+  cursor: pointer;
+  font-weight: normal;
+}
+
+#bot-naming-toggle span {
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* Active segment has normal "glow-btn" look */
+#bot-naming-toggle span.active {
+  background-color: #0077b6;
+  color: #fff;
+}
+
+/* Inactive segment mimics glow-btn border but transparent bg */
+#bot-naming-toggle span:not(.active) {
+  background-color: transparent;
+  color: #0077b6;
+}
+
+#sound-toggle-container {
+  position: absolute;
+  top: 45%;
+  right: 150%; /* Mirrors the bot-naming container's left side */
+  user-select: none;
+  pointer-events: auto;
+}
+
+#sound-toggle-btn {
+  width: 150px;
+  height: 150px;
+  background: url('./assets/misc/speaker.png') no-repeat center/contain;
+  background-size: 80%;
+  opacity: 0.6;
+  border: 4px solid rgba(0, 119, 182, 0.5);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+#sound-toggle-btn:hover {
+  transform: scale(1.1);
 }
 
 /* Slightly bigger font and brighter background for Go button */
@@ -266,7 +357,7 @@ h1 {
   }
 }
 
-@keyframes pulse {
+@keyframes pulse1 {
   0% {
     transform: scale(1);
     box-shadow: 0 0 10px rgba(0, 150, 199, 0.6);
@@ -400,12 +491,12 @@ h1 {
 
 #fish {
   position: fixed;
-  width: 360px;           /* Bigger width (default was 80px) */
-  height: 180px;           /* Keep aspect ratio roughly */
   top: 50vh;
   left: 50vw;
   pointer-events: none;
-  background: url('./assets/fish.png') no-repeat center/contain;
+  width: 360px;
+  height: 180px;
+  background: url('./assets/fish/fish1.png') no-repeat center/contain;
   transition: 
     transform 0.6s ease,
     filter 3s ease,
@@ -413,7 +504,7 @@ h1 {
 	 width 3s ease,
     height 3s ease;
   z-index: -9; /* behind buttons but above bubbles and grass */
-  opacity: 0.6;
+  opacity: 0.8;
 }
 
 #fishing-line {
@@ -425,7 +516,7 @@ h1 {
   background: rgba(128, 128, 128, 0.5);
   filter: blur(0.8px);
   opacity: 0.8;
-  transition: height 3s ease, left 1s ease;
+  transition: height 4s ease, left 0.1s ease;
   transform-origin: top center;
   animation: sway-top 14s ease-in-out infinite alternate;
 }
@@ -438,8 +529,8 @@ h1 {
   transform-origin: top center;
   width: 25px;
   height: 49px;
-  background: url('./assets/hook.png') no-repeat center/contain;
-  transition: transform 0.3s ease, opacity 0.5s ease, left 1s ease;
+  background: url('./assets/fish/hook.png') no-repeat center/contain;
+  transition: transform 3s ease, opacity 3s ease, left 0.1s ease;
   animation: hook-sway 4s ease-in-out infinite;
   pointer-events: none;
   z-index: -8;
@@ -447,17 +538,114 @@ h1 {
 
 /* Top sways gently left and right */
 @keyframes sway-top {
-  0%   { transform: rotate(-5deg) translateX(0); }
-  50%  { transform: rotate(5deg) translateX(5px); }
-  100% { transform: rotate(-5deg) translateX(0); }
+  0%   { transform: rotate(-15deg) translateX(25px); }
+  50%  { transform: rotate(5deg) translateX(20px); }
+  100% { transform: rotate(-5deg) translateX(25px); }
 }
 
 @keyframes hook-sway {
   0%, 100% {
-    transform: translateX(-90%) rotate(-5deg);
+    transform: translateX(-90%) rotate(-15deg);
   }
   50% {
     transform: translateX(-90%) rotate(5deg);
   }
 }
+
+#player-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  z-index: 0;
+}
+
+.player-avatar {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 40%;
+  background-color: transparent;
+  object-fit: cover;
+  box-shadow: 0 0 30px rgba(0, 180, 216, 0.7);
+}
+
+.player-name {
+	position: absolute;
+	text-align: center;
+	width: 100px;
+	color: white;
+	text-shadow: 0 0 4px black;
+	font-size: 25px;
+	pointer-events: none;
+}
+
+#card-deck-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;  /* just big enough to fit cards visually */
+  height: 140px;
+  pointer-events: none;
+}
+
+.card-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 140px;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+  pointer-events: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+#start-game-btn {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 3.5rem; /* or match your h1.title size */
+  color: #b0e0ff;
+  cursor: pointer;
+  user-select: none;
+  animation: pulse2 1.4s infinite ease-in-out;
+  transition: opacity 1s ease, transform 0.2s;
+  background: transparent;
+  opacity: 0;
+  text-align: center;
+}
+
+/* Optional hover effect */
+#start-game-btn:hover {
+  transform: translateX(-50%) scale(1.05);
+}
+
+@keyframes pulse2 {
+  0%, 100% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.12); }
+}
+
+#start-game-btn.fade-in {
+  opacity: 1;
+}
+
+#start-game-btn.fade-out {
+  opacity: 0;
+}
+
+#fish,
+#fishing-line,
+#fishing-hook,
+.bubble,
+.grass-blade,
+#fishing-line-container,
+#bubble-container,
+#seagrass-container
+{
+  will-change: transform;
+}
+
 
