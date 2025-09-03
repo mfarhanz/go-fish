@@ -27,6 +27,8 @@ let fishBlurTimeout;
 let velocityInterval;
 let reelUpTimeout;
 let dropLineTimeout;
+const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+const suits = ['C', 'D', 'H', 'S'];
 const fictionFirstParts = [
     "Cor", "Fin", "Bub", "Mar", "Shel", "Ree", "Tide", "Peb", "Glim", "Whis",
     "Nim", "Blip", "Echo", "Wave", "Drip", "Mist", "Sal", "Aqua", "Gush", "Flo",
@@ -94,6 +96,7 @@ let gameScreen = document.getElementById('game-screen');
 let menuPopup = document.getElementById('menu-popup');
 let fishingLineContainer = document.getElementById("fishing-line-container");
 const botNamingContainer = document.getElementById('bot-naming-style-container');
+let cardDeckContainer;
 
 // Sliders
 const playerSlider = document.getElementById('player-slider');
@@ -110,12 +113,14 @@ let MEMORIES = {};
 let HANDS = {};
 let SETS = {};
 let PLAYERS_REF = [];
+let DECK_REF = [];
+let HANDS_REF = [];
 let GAME_OVER = false;
 let GAME_START = false;
 let SOUND_FX = true;
 let SHOW_INFO = true;
 let BOT_NAME_STYLE = 0;
-let DECK;
+let DECK = [];
 
 function updateGradient(timestampStart) {
     const now = performance.now();
@@ -399,11 +404,62 @@ function fadeSwitch(hideEl, showEl) {
     }, 400); // Matches the CSS transition time (0.4s)
 }
 
+/* Randomize array in-place using Durstenfeld shuffle algorithm */
+function shuffle(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
+
+function setupTrackers(n) {
+    for (let i = 0; i < n; i++) {
+        // Only create memories if AI players exist or multiple players
+        if (!PLAYER_VS_AI || i !== 0) {
+            MEMORIES[i] = {};
+            for (let j = 0; j < n; j++) {
+                if (j !== i) {
+                    MEMORIES[i][j] = new Set(); // JS version of set
+                }
+            }
+        }
+        SETS[i] = [];
+        // HANDS[i] = [];
+        // Deal 5 cards to each player from DECK
+        // for (let k = 0; k < 5; k++) {
+            // if (DECK.length > 0) {
+                // HANDS[i].push(DECK.shift());
+            // }
+        // }
+    }
+}
+
+function gameLoop() {
+    if (GAME_OVER)
+        return;
+    // Simulate the play turn (you'll implement this later)
+    play(); // Placeholder
+    // Move to next player
+    PLAYER = (PLAYER + 1) % PLAYER_COUNT;
+    // Check if DECK and all hands are empty
+    const allEmpty = DECK.length === 0 &&
+        HANDS.every(hand => hand.length === 0);
+    if (allEmpty) {
+        GAME_OVER = true;
+        return;
+    }
+    // Schedule the next iteration
+    const delay = (PLAYER_VS_AI && PLAYER === 0) ? 100 : 0;
+    setTimeout(gameLoop, delay);
+}
+
 function onClickPlayer(event) {
     if (!GAME_START)
         return;
     const avatar = event.currentTarget;
-	 console.log(PLAYERS_REF[avatar.avatarId]);
+    console.log(PLAYERS_REF[avatar.avatarId]);
     // console.log(`Avatar clicked: ID = ${avatar.avatarId}`);
 }
 
@@ -617,7 +673,7 @@ function renderPlayers() {
 }
 
 function renderCardDeck() {
-    const cardDeckContainer = document.createElement("div");
+    cardDeckContainer = document.createElement("div");
     cardDeckContainer.id = "card-deck-container";
 
     // Choose a card back design randomly or set one explicitly
@@ -629,17 +685,135 @@ function renderCardDeck() {
         card.classList.add("card-back");
 
         // Slight random rotation
-        const range = Math.floor(Math.random() * (20 - 4 + 1)) + 4; // Random number between 4 and 20
-        const rotation = (Math.random() * range - range / 2).toFixed(10);
+        const range = Math.floor(Math.random() * (16 - 2 + 1)) + 2; // Random degree between (+-)2 and (+-)16
+        const rotation = (Math.random() * range - range / 2).toFixed(2);
 
         // Slight z-index offset so cards stack without full overlap
         card.style.transform = `rotate(${rotation}deg)`;
         card.style.zIndex = i;
 
+        DECK_REF.push(card); // Store card in global deck array
         cardDeckContainer.appendChild(card);
     }
 
+    // create the actual deck of card strings
+    for (const rank of ranks) {
+        for (const suit of suits) {
+            DECK.push(`${rank}of${suit}`);
+        }
+    }
+
+    shuffle(DECK); // shuffles DECK in-place
+
     gameScreen.appendChild(cardDeckContainer);
+}
+
+function positionPlayerHand(playerId) {
+    const hand = HANDS_REF[playerId];
+    if (!hand || hand.length === 0)
+        return;
+
+    const avatar = PLAYERS_REF[playerId];
+    const avatarRect = avatar.getBoundingClientRect();
+    const gameRect = gameScreen.getBoundingClientRect();
+
+    // Center Y aligned to avatar
+    const centerY = avatarRect.top - gameRect.top + avatarRect.height / 2 - 14; // 14 = half card height (28)
+    const centerX = avatarRect.left - gameRect.left + avatarRect.width + 5; // right side of avatar + small padding
+
+    const total = hand.length;
+    const fanSpread = Math.min(15, total * 6); // Max 15 degrees
+    const startAngle = -fanSpread / 2;
+
+    const overlap = 12; // tighter spacing for smaller cards
+
+    for (let i = 0; i < total; i++) {
+        const angle = startAngle + i * (fanSpread / (total - 1 || 1));
+        const offsetY = (i - total / 2) * overlap;
+        const card = hand[i];
+        card.style.left = `${centerX}px`;
+        card.style.top = `${centerY + offsetY}px`;
+        card.style.transform = `rotate(${angle}deg)`;
+        card.style.zIndex = i;
+    }
+}
+
+function dealInitialHands(cardCount = 5, onComplete = () => {}) {
+    let totalPlayers = PLAYER_COUNT;
+    let currentCard = 0;
+    let currentPlayer = 0;
+
+    function dealNext() {
+        if (currentCard >= cardCount){
+			  onComplete(); // ✅ Callback when done dealing
+			  return; // Stop when all cards are dealt
+		  }
+
+        dealCardToPlayer(currentPlayer); // Deal one card
+
+        currentPlayer++;
+        if (currentPlayer >= totalPlayers) {
+            currentPlayer = 0;
+            currentCard++; // Move to next round of cards
+        }
+
+        setTimeout(dealNext, 300); // Delay for animation
+    }
+
+    dealNext(); // Start the recursive loop
+}
+
+function dealCardToPlayer(playerId) {
+    const cardDeckContainer = document.getElementById("card-deck-container");
+    if (DECK_REF.length === 0)
+        return;
+
+    const card = DECK_REF.pop();
+    const avatar = PLAYERS_REF[playerId];
+    if (!avatar)
+        return;
+
+    const gameRect = gameScreen.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect(); // Get position BEFORE removing
+
+    // Remove from deck container (visually and DOM)
+    cardDeckContainer.removeChild(card);
+
+    // Move card to game screen
+    gameScreen.appendChild(card);
+
+    // Set absolute positioning based on original screen position
+    card.style.position = "absolute";
+    card.style.left = `${cardRect.left - gameRect.left}px`;
+    card.style.top = `${cardRect.top - gameRect.top}px`;
+    card.style.width = `${cardRect.width}px`;
+    card.style.height = `${cardRect.height}px`;
+    card.style.zIndex = 1000;
+    card.style.transition = "transform 0.5s ease, left 0.5s ease, top 0.5s ease, width 0.5s ease, height 0.5s ease";
+
+    // Force reflow
+    void card.offsetWidth;
+
+    // Animate toward the avatar
+    const avatarRect = avatar.getBoundingClientRect();
+    const targetX = avatarRect.left - gameRect.left + 50;
+    const targetY = avatarRect.top - gameRect.top + 120;
+
+    card.style.left = `${targetX}px`;
+    card.style.top = `${targetY}px`;
+    card.style.width = `32px`;
+    card.style.height = `45px`;
+
+    // Once animation finishes, add to hand and fan
+    setTimeout(() => {
+        if (!HANDS_REF[playerId]){
+			  HANDS_REF[playerId] = [];
+			  HANDS[playerId] = [];
+		  }
+        HANDS_REF[playerId].push(card);
+		  HANDS[playerId].push(DECK.shift());
+        positionPlayerHand(playerId); // use your fan layout
+    }, 500);
 }
 
 function setupGameScreen() {
@@ -691,6 +865,18 @@ function setupGameScreen() {
             // Wait for fade-out animation to complete before removing
             setTimeout(() => {
                 startGameBtn.remove(); // Remove from DOM itself
+					 setupTrackers(PLAYER_COUNT);
+                dealInitialHands(5, () => {	// Deal cards!
+                    // gameLoop(); // ✅ Guaranteed to run after all cards are dealt
+						  console.log(HANDS);
+						  console.log(DECK);
+						  console.log(SETS);
+						  console.log(MEMORIES);
+						  console.log(PLAYERS_REF);
+						  console.log(DECK_REF);
+						  console.log(HANDS_REF);
+						  console.log();
+                });
             }, 500);
             // (Optional) Start the game logic here later
         });
@@ -742,14 +928,17 @@ function setupGameScreen() {
 
         // Hide menu popup
         menuPopup.classList.remove("active");
-		  
-		  // Clearing game counters/trackers/flags
-			Object.keys(MEMORIES).forEach(key => delete MEMORIES[key]);
-			Object.keys(HANDS).forEach(key => delete HANDS[key]);
-			Object.keys(SETS).forEach(key => delete SETS[key]);
-			PLAYERS_REF.length = 0;
-			GAME_START = false;
-			PLAYER = 0;
+
+        // Clearing game counters/trackers/flags
+        Object.keys(MEMORIES).forEach(key => delete MEMORIES[key]);
+        Object.keys(HANDS).forEach(key => delete HANDS[key]);
+        Object.keys(SETS).forEach(key => delete SETS[key]);
+        PLAYERS_REF.length = 0;
+        HANDS_REF.length = 0;
+        DECK_REF.length = 0;
+        DECK.length = 0;
+        GAME_START = false;
+        PLAYER = 0;
 
         // After transition, hide game-screen and show splash
         setTimeout(() => {
