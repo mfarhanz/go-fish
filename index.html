@@ -7,7 +7,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Barrio&family=Walter+Turncoat&family=Slackey&family=Kranky&display=swap" rel="stylesheet">	
-	<link rel="stylesheet" href="style.css"/>
+	<link rel="stylesheet" href="src/style.css"/>
 
 </head>
 <body>
@@ -19,7 +19,6 @@
 	  </div>
   </div>
   <div id="fish"></div>
-  <!-- <img id="fish" src = "./assets/fish/fish2.png"/> -->
   <!-- Splash Screen -->
   <div id="start-screen" class="fade">
     <h1 class="title">
@@ -58,9 +57,12 @@
 		 <div class="option-value" id="player-count">4</div>
 	  </div>
 
-	  <div class="option-group">
+	  <div class="option-group" id="player-name-group">
 		 <p class="option-label">Play with Bots?</p>
-		 <button class="toggle-btn-1" id="bot-toggle">Yes</button>
+		 <div class="bot-toggle-row with-input" id="bot-toggle-row">
+			<button class="toggle-btn-2 active" id="bot-toggle">Yes</button>
+			<input type="text" id="player-name-input" maxlength="24" placeholder="Enter your name..." />
+		 </div>
 	  </div>
 
 	  <div class="option-group">
@@ -89,6 +91,6 @@
 		 <button class="glow-btn" id="back-to-splash-btn">Back</button>
 	  </div>
 	</div>
-  <script src="game.js"></script>
+  <script src="src/game.js"></script>
 </body>
 </html>

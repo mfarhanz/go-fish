@@ -16,7 +16,6 @@ html {
 body {
   margin: 0;
   padding: 0;
-  /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
   color: #0077b6;
   display: flex;
   justify-content: center;
@@ -315,7 +314,7 @@ input[type="range"]::-webkit-slider-thumb {
 #sound-toggle-btn {
   width: 150px;
   height: 150px;
-  background: url('./assets/misc/speaker.png') no-repeat center/contain;
+  background: url('../assets/misc/speaker.png') no-repeat center/contain;
   background-size: 80%;
   opacity: 0.6;
   border: 4px solid rgba(0, 119, 182, 0.5);
@@ -372,6 +371,64 @@ input[type="range"]::-webkit-slider-thumb {
   }
 }
 
+/* INPUT FIELD STYLE */
+#player-name-input {
+  opacity: 0;
+  width: 0;
+  transform: translateX(-30px);
+  transition: 
+	  opacity 0.4s ease, 
+	  transform 0.4s ease, 
+	  width 0.4s ease, 
+	  padding 0.4s ease;
+  padding: 0.4rem 0;
+  border-radius: 30px;
+  border: 3px solid #0077b675;
+  font-size: 1.4rem;
+  background-color: transparent;
+  color: #b0e0ff;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#player-name-input:focus {
+  outline: none;
+  border-color: #07b4d8;
+  box-shadow: 0 0 10px #b0e0ff;
+}
+
+.bot-toggle-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transition: all 0.4s ease;
+}
+
+/* Animate the button shift */
+#bot-toggle {
+  transition: transform 0.4s ease;
+}
+
+.bot-toggle-row.with-input {
+  justify-content: center;
+}
+
+/* When visible */
+.bot-toggle-row.with-input #player-name-input {
+  width: 250px;
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+  padding: 0.4rem 0.8rem;
+}
+
+.bot-toggle-row.with-input #bot-toggle {
+  transform: translateX(-10px);
+}
+
 .toggle-btn-1 {
   padding: 0.6rem 1.5rem;
   font-size: 1.3rem;
@@ -420,7 +477,7 @@ input[type="range"]::-webkit-slider-thumb {
   background-color: transparent;
   color: #0077b6;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease, transform 1s ease;
 }
 
 .toggle-btn-2:hover {
@@ -496,7 +553,7 @@ input[type="range"]::-webkit-slider-thumb {
   pointer-events: none;
   width: 360px;
   height: 180px;
-  background: url('./assets/fish/fish1.png') no-repeat center/contain;
+  background: url('../assets/fish/fish1.png') no-repeat center/contain;
   transition: 
     transform 0.6s ease,
     filter 3s ease,
@@ -529,7 +586,7 @@ input[type="range"]::-webkit-slider-thumb {
   transform-origin: top center;
   width: 25px;
   height: 49px;
-  background: url('./assets/fish/hook.png') no-repeat center/contain;
+  background: url('../assets/fish/hook.png') no-repeat center/contain;
   transition: transform 3s ease, opacity 3s ease, left 0.1s ease;
   animation: hook-sway 4s ease-in-out infinite;
   pointer-events: none;
@@ -565,9 +622,31 @@ input[type="range"]::-webkit-slider-thumb {
   width: 100px;
   height: 100px;
   border-radius: 40%;
+  border: 3px solid var(--border-color, white); /* fallback = white */
+  box-shadow: inset 0 0 10px var(--glow-color, transparent), 0 0 30px var(--glow-color, transparent);
   background-color: transparent;
   object-fit: cover;
-  box-shadow: 0 0 30px rgba(0, 180, 216, 0.7);
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+  transform: var(--base-transform, none);
+}
+
+.player-avatar.glow:hover {
+  box-shadow: inset 0 0 10px 10px var(--border-color), 0 0 15px 10px var(--border-color, #fff)
+}
+
+.player-avatar.tilt-shake {
+  animation: tilt-shake 0.4s;
+}
+
+@keyframes tilt-shake {
+  0%   { transform: var(--base-transform) rotate(0deg); }
+  10%  { transform: var(--base-transform) rotate(-10deg); }
+  20%  { transform: var(--base-transform) rotate(10deg); }
+  30%  { transform: var(--base-transform) rotate(-10deg); }
+  40%  { transform: var(--base-transform) rotate(10deg); }
+  50%  { transform: var(--base-transform) rotate(0deg); }
+  100% { transform: var(--base-transform) rotate(0deg); }
 }
 
 .player-name {
@@ -577,7 +656,17 @@ input[type="range"]::-webkit-slider-thumb {
 	color: white;
 	text-shadow: 0 0 4px black;
 	font-size: 25px;
+	transition: text-shadow 0.7s ease, color 0.3s ease, font-size 0.3s ease;
 	pointer-events: none;
+}
+
+.player-name.glow {
+    color: #b0e0ff;
+	 font-size: 30px;
+    text-shadow:
+        0 0 10px #fff,
+        0 0 15px #0ff,
+        0 0 20px #0ff;
 }
 
 #card-deck-container {
@@ -598,47 +687,133 @@ input[type="range"]::-webkit-slider-thumb {
   height: 140px;
   border-radius: 8px;
   transition: transform 0.3s ease;
-  pointer-events: none;
+  /* pointer-events: none; */
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  backface-visibility: hidden;
+    transform-style: preserve-3d;
   /* ✅ These help prevent clipping */
   overflow: visible;             /* Prevent corner clipping */
   object-fit: cover;            /* Ensures image doesn't stretch */
   /* image-rendering: auto;        /* Ensures smooth scaling */ */
 }
 
-#start-game-btn {
+.floating-text-btn {
   position: absolute;
   bottom: 5%;
   left: 50%;
   transform: translateX(-50%);
   font-size: 3.5rem; /* or match your h1.title size */
-  color: #b0e0ff;
+  color: #8fd3ff;
   cursor: pointer;
   user-select: none;
-  animation: pulse2 1.4s infinite ease-in-out;
+  animation: floating-btn-pulse 1.4s infinite ease-in-out;
   transition: opacity 1s ease, transform 0.2s;
   background: transparent;
   opacity: 0;
   text-align: center;
+  z-index: 999;
 }
 
 /* Optional hover effect */
-#start-game-btn:hover {
+.floating-text-btn:hover {
   transform: translateX(-50%) scale(1.05);
 }
 
-@keyframes pulse2 {
+.floating-text-btn.fade-in {
+  opacity: 1;
+}
+
+.floating-text-btn.grow-and-fade-out {
+  transition: transform 2s ease, opacity 2s ease;
+  transform: translateX(-50%) scale(1.3);
+  opacity: 0;
+}
+
+.floating-text-btn.hidden {
+    display: none;
+}
+
+@keyframes floating-btn-pulse {
   0%, 100% { transform: translateX(-50%) scale(1); }
   50% { transform: translateX(-50%) scale(1.12); }
 }
 
-#start-game-btn.fade-in {
-  opacity: 1;
+@keyframes floating-btn-shake {
+  0% { transform: translateX(-50%) translateY(0); }
+  25% { transform: translateX(-50%) translateY(-3px); }
+  50% { transform: translateX(-50%) translateY(3px); }
+  75% { transform: translateX(-50%) translateY(-3px); }
+  100% { transform: translateX(-50%) translateY(0); }
 }
 
-#start-game-btn.fade-out {
-  opacity: 0;
+.floating-text {
+    position: absolute;
+    transform: translate(-50%, 0);
+    font-size: 24px;
+    font-weight: bold;
+    pointer-events: none;
+    transition: transform 5s ease, opacity 5s ease;
+    z-index: 2000;
+    opacity: 1;
 }
+
+.floating-text.gain {
+    color: hsl(130, 100%, 55%); /* green */
+    text-shadow: 0 0 6px rgba(0, 255, 0, 0.6);
+}
+
+.floating-text.loss {
+    color: hsl(0, 100%, 60%); /* red */
+    text-shadow: 0 0 6px rgba(255, 0, 0, 0.5);
+}
+
+.speech-bubble {
+    position: absolute;
+    transform: translateX(-50%);
+    max-width: 300px;
+    padding: 8px 8px;
+    background: rgba(128, 128, 128, 0.2); /* semi-transparent gray background */
+    color: #7feefa; /* soft neon blue */
+    border-radius: 30px;
+    box-shadow:
+        0 0 10px rgba(176, 224, 255, 0.6), /* soft outer glow */
+        0 0 20px rgba(0, 255, 255, 0.4);   /* cyan glow */
+    font-size: 1.2rem;
+    z-index: 20;
+    opacity: 1;
+    transition: opacity 0.4s ease;
+    word-wrap: break-word;
+    white-space: normal;       /* allow multiline */
+    text-align: center;        /* optional: center text */
+    line-height: 1.2;
+	 backdrop-filter: blur(2px); /* slight blur behind */
+}
+
+.speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.2) transparent transparent transparent;
+}
+
+.speech-bubble.fade-out {
+    opacity: 0;
+}
+
+/* Fade and shrink out effect for removed cards */
+.card-remove {
+  transform: opacity 0.3s ease, scale(0.3) rotate(-30deg) translateY(-50px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+
+
 
 #fish,
 #fishing-line,
