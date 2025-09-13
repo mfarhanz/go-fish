@@ -20,47 +20,50 @@
   </div>
   <div id="fish"></div>
   <!-- Splash Screen -->
-  <div id="start-screen" class="fade">
+  <div id="start-screen" class="screen-fade-in">
     <h1 class="title">
       <span>G</span><span>o</span> <span>F</span><span>i</span><span>s</span><span>h</span><span>!</span>
     </h1>
-    <div class="button-container">
+    <div class="btn-container" style="margin-top: 0;">
       <button class="glow-btn" id="play-btn">Play</button>
       <button class="glow-btn" id="rules-btn">Rules</button>
     </div>
   </div>
   
   <!-- Rules Screen (initially hidden) -->
-	<div id="rules-screen" class="fade" style="display: none;">
-		<h2 id="rules-title" class="title">Rules</h2>
+	<div id="rules-screen" style="display: none;">
+		<h2 id="rules-title" class="title subheading">Rules</h2>
 		<ul id="rules-list">
-			<li>Each player starts with 5 cards.</li>
-			<li>Ask another player for a card rank you already have.</li>
-			<li>If they have it, you get all cards of that rank.</li>
-			<li>If not — “Go Fish!” — draw from the deck.</li>
-			<li>Make sets (4 of a kind) to score points.</li>
-			<li>When all sets are made, the game ends.</li>
-			<li>Player with most sets wins!</li>
+		  <li>Each player starts with 5 cards.</li>
+		  <li>On your turn, ask another player for a rank you already have.</li>
+		  <li>If they have any, they must give all cards of that rank — and you go again.</li>
+		  <li>If not, "Go Fish!" — draw one card, and your turn ends.</li>
+		  <li>Make sets of 4 matching ranks to score points.</li>
+		  <li>If your hand is empty, you draw up to 4 cards from the deck on your turn.</li>
+		  <li>Bot players remember past moves based on difficulty — choose wisely.</li>
+		  <li>The game ends when all 13 sets are made or the deck is empty and no hands remain.</li>
+		  <li>The player with the most sets wins.</li>
+		  <li>Standard ranks (2–10, J, Q, K, A) are used; remember, suits don’t matter.</li>
 		</ul>
-		<div class="button-container" style="margin-top: 3rem;">
-			<button class="glow-btn" id="back-btn">Back</button>
+		<div class="btn-container">
+			<button class="glow-btn" id="rules-to-splash">Back</button>
 		</div>
 	</div>
 	
 	<!-- Match Options Screen (initially hidden) -->
 	<div id="options-screen" style="display: none;">
-	  <h2 id="options-title" class="title">Match Options</h2>
+	  <h2 id="options-title" class="title subheading">Match Options</h2>
 
 	  <div class="option-group">
 		 <p class="option-label">Number of Players:</p>
-		 <input type="range" id="player-slider" min="2" max="6" value="4" />
-		 <div class="option-value" id="player-count">4</div>
+		 <input type="range" id="player-slider" class="slider" min="2" max="6" value="4" />
+		 <div class="slider-value" id="player-count">4</div>
 	  </div>
 
 	  <div class="option-group" id="player-name-group">
 		 <p class="option-label">Play with Bots?</p>
 		 <div class="bot-toggle-row with-input" id="bot-toggle-row">
-			<button class="toggle-btn-2 active" id="bot-toggle">Yes</button>
+			<button class="toggle-btn active" id="bot-toggle">Yes</button>
 			<input type="text" id="player-name-input" maxlength="24" placeholder="Enter your name..." />
 		 </div>
 	  </div>
@@ -68,27 +71,27 @@
 	  <div class="option-group">
 		  <p class="option-label">Select difficulty:</p>
 		  <div class="toggle-group" id="difficulty-toggle">
-			 <button class="toggle-btn-2 active">Easy</button>
-			 <button class="toggle-btn-2">Medium</button>
-			 <button class="toggle-btn-2">Hard</button>
+			 <button class="toggle-btn active">Easy</button>
+			 <button class="toggle-btn">Medium</button>
+			 <button class="toggle-btn">Hard</button>
 		  </div>
 	  </div>
 	  
-	  <div id="bot-naming-style-container">
-		  <label class="bot-naming-label">Bot Name Style</label>
-		  <button id="bot-naming-toggle" class="toggle-btn-2">
-				<span class="classic-label active">Fictional</span>
-				<span class="descriptive-label">Whimsical</span>
+	  <div id="bot-naming-container">
+		  <label class="bot-naming-label option-label">Bot Name Style</label>
+		  <button id="bot-naming-toggle" class="toggle-btn">
+				<span class="naming-imaginary active">Imaginary</span>
+				<span class="naming-descriptive">Descriptive</span>
 		  </button>
 		</div>
 		
 		<div id="sound-toggle-container">
-		  <button id="sound-toggle-btn" class="icon-btn" title="Toggle Sound"></button>
+		  <button id="sound-toggle-btn" title="Toggle Sound"></button>
 		</div>
 
-	  <div class="button-container" style="margin-top: 3rem;">
+	  <div class="btn-container">
 		 <button class="glow-btn go-btn" id="go-btn">Go</button>
-		 <button class="glow-btn" id="back-to-splash-btn">Back</button>
+		 <button class="glow-btn" id="options-to-splash">Back</button>
 	  </div>
 	</div>
   <script src="src/game.js"></script>

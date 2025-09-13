@@ -1,38 +1,41 @@
-let dayColors = ['#075359', '#0f0530']; // top and bottom
-let nightColors = ['#19014d', '#05010f']; // darker blues
+let mouseX = 0, mouseY = 0;
 let screenWidth = window.innerWidth;
 let screenHeight = window.innerHeight;
-let progress = 0; // 0 = day, 1 = night
-let direction = 1; // 1 = day→night, -1 = night→day
-const duration = 120000; // 2 minutes
-let mouseHoldInterval = null;
-let mouseX = 0, mouseY = 0;
-let isMouseDown = false;
-let facingLeft = false;
+let mouseHoldIntervalId = null;
+
+let gradientUpdateCtr = 0; // 0 = day, 1 = night
+const GRADIENT_UPDATE_DURATION = 120000; // 2 minutes
+let dayGradientColors = ['#075359', '#0f0530']; // top and bottom
+let nightGradientColors = ['#19014d', '#05010f']; // darker blues
+
 let isDay = false;
-let pos = {
-    x: screenWidth / 2,
-    y: screenHeight / 2
-};
-let velocity = {
-    x: 0,
-    y: 0
-};
-let targetVelocity = {
-    x: 0,
-    y: 0
-};
+let isMouseDown = false;
+let isFishFacingLeft = false;
+
 let fishWidth;
 let fishHeight;
-let bubbleInterval;
+let bubbleIntervalId;
+let velocityIntervalId;
 let fishAnimationFrameId;
 let fishCycleController;
 let fishingCycleController;
-let velocityInterval;
-let backDesign;
-const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-const suits = ['C', 'D', 'H', 'S'];
-const fictionFirstParts = [
+let fishPosition = {
+    x: screenWidth / 2,
+    y: screenHeight / 2
+};
+let fishVelocity = {
+    x: 0,
+    y: 0
+};
+let targetFishVelocity = {
+    x: 0,
+    y: 0
+};
+
+let cardBackDesignSrc;
+const SUITS = ['C', 'D', 'H', 'S'];
+const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+const NAMING_IMAGINARY_FIRST_PTS = [
     "Cor", "Fin", "Bub", "Mar", "Shel", "Ree", "Tide", "Peb", "Glim", "Whis",
     "Nim", "Blip", "Echo", "Wave", "Drip", "Mist", "Sal", "Aqua", "Gush", "Flo",
     "Dart", "Zin", "Nauti", "Sun", "Ray", "Deep", "Squid", "Kel", "Shad", "Foam",
@@ -41,7 +44,7 @@ const fictionFirstParts = [
     "Brim", "Brook", "Curl", "Fizz", "Snib", "Thal", "Quiv", "Loam", "Brack", "Murk"
 ];
 
-const fictionSecondParts = [
+const NAMING_IMAGINARY_SECOND_PTS = [
     "al", "na", "bles", "lin", "ly", "o", "ish", "ette", "bit", "on",
     "drop", "er", "ia", "fin", "tail", "gle", "boo", "zy", "zor", "ean",
     "ish", "el", "ith", "an", "ul", "il", "or", "ous", "ax", "ex",
@@ -50,7 +53,7 @@ const fictionSecondParts = [
     "oth", "yne", "eph", "ald", "isk", "orp", "und", "ell", "osk", "aph"
 ];
 
-const descriptiveFirstParts = [
+const NAMING_DESCRIPTIVE_FIRST_PTS = [
     "Slick", "Bright", "Tiny", "Sandy", "Silent", "Briny", "Glow", "Swift", "Jelly",
     "Slippy", "Cloud", "Crabby", "Snappy", "Frosty", "Mossy", "Inky", "Twinkly", "Blue",
     "Lazy", "Rapid", "Curly", "Chubby", "Dizzy", "Wiggly", "Puffy", "Glimmer", "Zesty", "Drifty",
@@ -61,7 +64,7 @@ const descriptiveFirstParts = [
     "Rapid-Fire", "Synthetic", "Lucid", "Erratic", "Prime", "Phasebound", "Brutal", "Deranged"
 ];
 
-const descriptiveSecondParts = [
+const NAMING_DESCRIPTIVE_SECOND_PTS = [
     "Crab", "Poke", "Bloop", "Bubble", "Kick", "Hug", "Swirl", "Dancer", "Whale", "Shrimp",
     "Sting", "Swoop", "Claw", "Slap", "Slime", "Dart", "Reef", "Rock", "Sinker", "Rider",
     "Diver", "Chomp", "Shimmer", "Snapper", "Stream", "Whisk", "Doodle", "Boop", "Skipper", "Tidal",
@@ -70,7 +73,101 @@ const descriptiveSecondParts = [
     "Vortex", "Howler", "Rift", "Vapor", "Echo", "Flare", "Tremor", "Surge", "Veil", "Harpoon"
 ];
 
-// Fish stuff
+const nPos = { // preset naming positioning styles
+        l: {
+            top: "58%",
+            left: "4%",
+            right: "auto",
+            bottom: "auto"
+        }, // LEFT
+        r: {
+            top: "58%",
+            left: "auto",
+            right: "6%",
+            bottom: "auto"
+        }, // RIGHT
+        tl: {
+            top: "20%",
+            left: "20%",
+            right: "auto",
+            bottom: "auto"
+        }, // TOP LEFT
+        tr: {
+            top: "20%",
+            left: "auto",
+            right: "23%",
+            bottom: "auto"
+        }, // TOP RIGHT
+        bl: {
+            top: "auto",
+            left: "20%",
+            right: "auto",
+            bottom: "5%"
+        }, // BOTTOM LEFT
+        br: {
+            top: "auto",
+            left: "auto",
+            right: "23%",
+            bottom: "5%"
+        }, // BOTTOM RIGHT
+        t: {
+            top: "20%",
+            left: "46%",
+            right: "auto",
+            bottom: "auto"
+        }, // TOP
+        b: {
+            top: "auto",
+            left: "46%",
+            right: "auto",
+            bottom: "4%"
+        } // BOTTOM
+    };
+
+    const aPos = { // preset avatar positioning styles
+        l: {
+            top: "50%",
+            left: "5%",
+            transform: "translateY(-50%)"
+        },
+        r: {
+            top: "50%",
+            right: "5%",
+            transform: "translateY(-50%)"
+        },
+        tl: {
+            top: "5%",
+            left: "25%",
+            transform: "translateX(-50%)"
+        },
+        tr: {
+            top: "5%",
+            right: "25%",
+            transform: "translateX(50%)"
+        },
+        bl: {
+            bottom: "10%",
+            left: "25%",
+            transform: "translateX(-50%)"
+        },
+        br: {
+            bottom: "10%",
+            right: "25%",
+            transform: "translateX(50%)"
+        },
+        t: {
+            top: "5%",
+            left: "50%",
+            transform: "translateX(-50%)"
+        },
+        b: {
+            bottom: "10%",
+            left: "50%",
+            transform: "translateX(-50%)"
+        },
+    };
+	 
+// DOM References
 let fish = document.getElementById('fish');
 let fishingLine = document.getElementById("fishing-line");
 let fishingHook = document.getElementById("fishing-hook");
@@ -78,18 +175,19 @@ let fishingHook = document.getElementById("fishing-hook");
 // Buttons
 const playBtn = document.getElementById('play-btn');
 const rulesBtn = document.getElementById('rules-btn');
-const backBtn = document.getElementById('back-btn');
+const rulesToSplashBtn = document.getElementById('rules-to-splash');
 const goBtn = document.getElementById('go-btn');
-const backToSplashBtn = document.getElementById('back-to-splash-btn');
-const difficultyButtons = document.querySelectorAll('#difficulty-toggle .toggle-btn-2');
+const optionsToSplashBtn = document.getElementById('options-to-splash');
+const difficultyBtns = document.querySelectorAll('#difficulty-toggle .toggle-btn');
 const botToggleBtn = document.getElementById('bot-toggle');
 const botNamingToggleBtn = document.getElementById('bot-naming-toggle');
 const soundToggleBtn = document.getElementById("sound-toggle-btn");
 let menuBtn = document.getElementById('menu-btn');
 let closeMenuBtn = document.getElementById('close-menu-btn');
 let soundToggleMenuBtn = document.getElementById("toggle-sound");
-let oppInfoToggleBtn = document.getElementById("toggle-opp-info");
-let quitGameBtn = document.getElementById("quit-game");
+let oppInfoToggleMenuBtn = document.getElementById("toggle-opp-info");
+let matchLogsToggleMenuBtn = document.getElementById("toggle-log");
+let quitGameMenuBtn = document.getElementById("quit-game");
 let askPlayerBtn;
 
 // Screens/Containers
@@ -97,10 +195,10 @@ const startScreen = document.getElementById('start-screen');
 const rulesScreen = document.getElementById('rules-screen');
 const optionsScreen = document.getElementById('options-screen');
 let gameScreen = document.getElementById('game-screen');
-let menuPopup = document.getElementById('menu-popup');
-const botToggleRow = document.getElementById('bot-toggle-row');
+let menuSubwindow = document.getElementById('menu-subwindow');
+const botToggleContainer = document.getElementById('bot-toggle-row');
 let fishingLineContainer = document.getElementById("fishing-line-container");
-const botNamingContainer = document.getElementById('bot-naming-style-container');
+const botNamingContainer = document.getElementById('bot-naming-container');
 let cardDeckContainer;
 
 // Sliders
@@ -113,50 +211,50 @@ const playerCount = document.getElementById('player-count');
 const playerNameInput = document.getElementById('player-name-input');
 
 // Variables
-let PLAYER_VS_AI = true; // default value
-let DIFFICULTY = 1; // default value
-let PLAYER_COUNT = 4; // default starting value
+let gameOver = false;
+let gameStart = false;
+let gamePaused = false;
+let gameQuitted = false;
+let soundFx = true;
+let playerVsAI = true;
+let showOpponentInfo = false;
+let logMode = false;
+let userIsAsking = false;
 let PLAYER = 0;
+let DIFFICULTY = 1;
+let PLAYER_COUNT = 4; // default starting value
+let botNamingStyle = 0;
+let currentGameSessionId = 1;
 let MEMORIES = {};
 let HANDS = {};
 let SETS = {};
+let DECK = [];
 let DECK_REF = [];
 let HANDS_REF = [];
 let PLAYERS_REF = [];
 let PLAYER_LABELS_REF = [];
-let GAME_OVER = false;
-let GAME_START = false;
-let GAME_PAUSED = false;
-let GAME_QUITTED = false;
-let SOUND_FX = true;
-let SHOW_OPP_INFO = false;
-let BOT_NAME_STYLE = 0;
-let GAME_SESSION_ID = 1;
-let DECK = [];
-let LOG_MODE = false;
-let USER_ASKING = false;
-let USER_CHOSEN_RANK;
-let USER_CHOSEN_PLAYER;
-let INFO_FONT_STYLE = 'color: blue;'
-    let SUCCESS_FONT_STYLE = 'color: green;'
-    let LOG_FONT_STYLE = 'color: gray; font-style: italic;'
+let userChosenRank;
+let userChosenPlayer;
+let infoFontStyle = 'color: blue;';
+let successFontStyle = 'color: green;';
+let logFontStyle = 'color: gray; font-style: italic;';
 
 function updateGradient(timestampStart) {
     const now = performance.now();
     const elapsed = now - timestampStart;
-    progress = Math.min(elapsed / duration, 1);
+    gradientUpdateCtr = Math.min(elapsed / GRADIENT_UPDATE_DURATION, 1);
     // Interpolate each gradient color
-    const topColor = interpolateColor(dayColors[0], nightColors[0], progress);
-    const bottomColor = interpolateColor(dayColors[1], nightColors[1], progress);
+    const topColor = interpolateColor(dayGradientColors[0], nightGradientColors[0], gradientUpdateCtr);
+    const bottomColor = interpolateColor(dayGradientColors[1], nightGradientColors[1], gradientUpdateCtr);
 
     // Update background
     document.body.style.background = `linear-gradient(to bottom, ${topColor} 0%, ${bottomColor} 100%)`;
 
-    if (progress < 1) {
+    if (gradientUpdateCtr < 1) {
         requestAnimationFrame(() => updateGradient(timestampStart));
     } else {
         // Once done, flip direction and start reverse transition
-        [dayColors, nightColors] = [nightColors, dayColors]; // swap colors
+        [dayGradientColors, nightGradientColors] = [nightGradientColors, dayGradientColors]; // swap colors
         setTimeout(() => {
             requestAnimationFrame((ts) => updateGradient(performance.now()));
         }, 1000); // optional pause before reversing
@@ -172,13 +270,6 @@ function interpolateColor(color1, color2, factor) {
     const result = c1.map((c, i) => Math.round(c + factor * (c2[i] - c)));
     return '#' + result.map(c => c.toString(16).padStart(2, '0')).join('');
 }
-
-// function toggleDayNight() {
-// const dayGradient = "linear-gradient(to bottom, #075359 0%, #0f0530 100%)";
-// const nightGradient = "linear-gradient(to bottom, #011c30 0%, #000814 100%)";
-// document.body.style.background = isDay ? nightGradient : dayGradient;
-// isDay = !isDay;
-// }
 
 function spawnBubble() {
     const container = document.getElementById('bubble-container');
@@ -244,20 +335,6 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// function delay(ms) {
-// const boundSessionId = GAME_SESSION_ID;
-// console.log(boundSessionId);
-// return new Promise(resolve => {
-// setTimeout(() => {
-// if (GAME_SESSION_ID !== boundSessionId) {
-// console.log("Delay aborted due to session change");
-// return; // don't resolve
-// }
-// resolve();
-// }, ms);
-// });
-// }
-
 function delayAbortable(ms, signal) {
     return new Promise((resolve, reject) => {
         if (signal?.aborted) {
@@ -284,12 +361,12 @@ function randomVelocity() {
 
 function updateVelocity() {
     // New random velocity every 2-4 seconds
-    targetVelocity.x = randomVelocity();
-    targetVelocity.y = randomVelocity();
+    targetFishVelocity.x = randomVelocity();
+    targetFishVelocity.y = randomVelocity();
     if (Math.random() < 0.3) {
         // 30% chance to pause (hover)
-        targetVelocity.x = 0;
-        targetVelocity.y = 0;
+        targetFishVelocity.x = 0;
+        targetFishVelocity.y = 0;
     }
 }
 
@@ -304,41 +381,41 @@ function desc(a, b) {
 
 function animateFish() {
     // Smooth velocity changes
-    velocity.x = lerp(velocity.x, targetVelocity.x, 0.05);
-    velocity.y = lerp(velocity.y, targetVelocity.y, 0.05);
+    fishVelocity.x = lerp(fishVelocity.x, targetFishVelocity.x, 0.05);
+    fishVelocity.y = lerp(fishVelocity.y, targetFishVelocity.y, 0.05);
 
     // Update position
-    pos.x += velocity.x;
-    pos.y += velocity.y;
+    fishPosition.x += fishVelocity.x;
+    fishPosition.y += fishVelocity.y;
 
     // Keep fish inside viewport bounds with some padding
     const padding = 50;
-    if (pos.x < padding) {
-        pos.x = padding;
-        velocity.x = Math.abs(velocity.x);
-    } else if (pos.x > screenWidth - padding) {
-        pos.x = screenWidth - padding;
-        velocity.x = -Math.abs(velocity.x);
+    if (fishPosition.x < padding) {
+        fishPosition.x = padding;
+        fishVelocity.x = Math.abs(fishVelocity.x);
+    } else if (fishPosition.x > screenWidth - padding) {
+        fishPosition.x = screenWidth - padding;
+        fishVelocity.x = -Math.abs(fishVelocity.x);
     }
-    if (pos.y < padding) {
-        pos.y = padding;
-        velocity.y = Math.abs(velocity.y);
-    } else if (pos.y > screenHeight - padding) {
-        pos.y = screenHeight - padding;
-        velocity.y = -Math.abs(velocity.y);
+    if (fishPosition.y < padding) {
+        fishPosition.y = padding;
+        fishVelocity.y = Math.abs(fishVelocity.y);
+    } else if (fishPosition.y > screenHeight - padding) {
+        fishPosition.y = screenHeight - padding;
+        fishVelocity.y = -Math.abs(fishVelocity.y);
     }
 
     // Move the fish element
-    fish.style.left = `${pos.x}px`;
-    fish.style.top = `${pos.y}px`;
+    fish.style.left = `${fishPosition.x}px`;
+    fish.style.top = `${fishPosition.y}px`;
 
     // Flip fish only if direction changed
-    if (velocity.x < 0 && facingLeft) {
+    if (fishVelocity.x < 0 && isFishFacingLeft) {
         fish.style.transform = 'scaleX(1)';
-        facingLeft = false;
-    } else if (velocity.x > 0 && !facingLeft) {
+        isFishFacingLeft = false;
+    } else if (fishVelocity.x > 0 && !isFishFacingLeft) {
         fish.style.transform = 'scaleX(-1)';
-        facingLeft = true;
+        isFishFacingLeft = true;
     }
 
     fishAnimationFrameId = requestAnimationFrame(animateFish);
@@ -456,26 +533,32 @@ function startFishingLineCycle() {
     return controller;
 }
 
-function fadeSwitch(hideEl, showEl) {
+function fadedScreenSwitch(current, target) {
     // Add 'fade' class if not present
-    hideEl.classList.add('fade');
-    showEl.classList.add('fade');
+    current.classList.add('screen-fade-in');
+    target.classList.add('screen-fade-in');
 
     // Fade out the current element
-    hideEl.classList.add('hidden');
+    current.classList.add('screen-fade-out');
 
     // After fade out completes
     setTimeout(() => {
-        hideEl.style.display = 'none';
+        current.style.display = 'none';
 
         // Show the new screen and fade it in
-        showEl.style.display = 'block';
+        target.style.display = 'block';
 
         // Force reflow so opacity transition triggers
-        void showEl.offsetWidth;
+        void target.offsetWidth;
 
-        showEl.classList.remove('hidden');
+        target.classList.remove('screen-fade-out');
     }, 400); // Matches the CSS transition time (0.4s)
+}
+
+function logMessage(...args) {
+    if (logMode) {
+        console.log(...args);
+    }
 }
 
 function debounce(fn, delay = 500) {
@@ -499,10 +582,10 @@ function shuffle(array) {
     }
 }
 
-function setupTrackers(n) {
+function initStateBuffers(n) {
     for (let i = 0; i < n; i++) {
         // Only create memories if AI players exist or multiple players
-        if (!PLAYER_VS_AI || i !== 0) {
+        if (!playerVsAI || i !== 0) {
             MEMORIES[i] = {};
             for (let j = 0; j < n; j++) {
                 if (j !== i) {
@@ -549,10 +632,10 @@ function getMostNeededCards(player = null) {
 async function checkIfEmptyHand(player) {
     if (HANDS[player] && HANDS[player].length === 0) {
         const n = Math.min(4, DECK.length);
-        const cond = PLAYER_VS_AI && player === 0;
+        const cond = playerVsAI && player === 0;
         if (n === 0)
             return;
-        console.log(`${PLAYERS_REF[player].playerName} takes ${n} cards from the top of the deck since their hand is empty.`);
+        logMessage(`${PLAYERS_REF[player].playerName} takes ${n} cards from the top of the deck since their hand is empty.`);
         for (let i = 0; i < n; i++) {
             await takeCardFromDeck(player);
         }
@@ -571,10 +654,11 @@ async function deleteVisualCard(playerId, indices) {
         if (!card)
             continue;
 
-        // Animate the card
-        card.style.transition = "opacity 0.3s ease, transform 0.3s ease";
-        card.style.opacity = 0;
-        card.style.transform = "scale(0.3) rotate(-30deg) translateY(-50px)";
+        // Animate the card getting deleted
+        card.classList.add('card-remove');
+        // card.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+        // card.style.opacity = 0;
+        // card.style.transform = "scale(0.3) rotate(-30deg) translateY(-50px)";
 
         // Remove from DOM after animation
         card.addEventListener("transitionend", () => {
@@ -620,7 +704,7 @@ async function checkForSets() {
             removedRanks.push(rank);
             showFloatingText(PLAYER, "+SET!");
             await delay(300);
-            const name = PLAYER_VS_AI && PLAYER === 0 ? "You" : `Player${PLAYER}`;
+            const name = playerVsAI && PLAYER === 0 ? "You" : `Player${PLAYER}`;
             highlightSuccess(`${name} made a set of ${rank}s!`);
         }
     }
@@ -710,66 +794,40 @@ function updateMemories(card, giver) {
 }
 
 function showDetails() {
-    console.log('%cEveryone\'s hands:', LOG_FONT_STYLE);
+    logMessage('%cEveryone\'s hands:', logFontStyle);
 
     for (const playerId in HANDS) {
-        console.log(`%c${PLAYERS_REF[playerId].playerName}:`, LOG_FONT_STYLE, `${HANDS[playerId].join(', ')}`);
+        logMessage(`%c${PLAYERS_REF[playerId].playerName}:`, logFontStyle, `${HANDS[playerId].join(', ')}`);
     }
 
-    console.log('%cEveryone\'s memories:', LOG_FONT_STYLE);
+    logMessage('%cEveryone\'s memories:', logFontStyle);
     for (const playerId in MEMORIES) {
         const mem = MEMORIES[playerId];
         const formatted = Object.entries(mem)
             .map(([k, v]) => `${k}: [${[...v].join(', ')}]`)
             .join(', ');
-        console.log(`%c${PLAYERS_REF[playerId].playerName}:`, LOG_FONT_STYLE, `${formatted}`);
+        logMessage(`%c${PLAYERS_REF[playerId].playerName}:`, logFontStyle, `${formatted}`);
     }
 }
 
 function highlightInfo(msg) {
-    console.log(`%c${msg}`, INFO_FONT_STYLE);
+    logMessage(`%c${msg}`, infoFontStyle);
 }
 
 function highlightSuccess(msg) {
-    console.log(`%c${msg}`, SUCCESS_FONT_STYLE);
+    logMessage(`%c${msg}`, successFontStyle);
 }
 
 function checkSession(fn) {
     return async function (sessionId, ...args) {
-        if (sessionId !== GAME_SESSION_ID) {
-            console.log("Function aborted due to outdated session");
+        if (sessionId !== currentGameSessionId) {
+            logMessage("Function aborted due to outdated session");
             return;
         }
-        await waitUntilToggled(() => !GAME_PAUSED, 300);
+        await waitUntilToggled(() => !gamePaused, 300);
         return fn.apply(this, [sessionId, ...args]);
     };
 }
-
-const guessPlayerOrGoFish = checkSession(async function (sessionId, player, card) {
-    const cond = PLAYER_VS_AI && PLAYER === 0;
-    await showSpeechBubble(PLAYER, `Hey ${PLAYERS_REF[player].playerName}, got any ${card}s?`);
-    if (await takeCardFromPlayer(player, card)) {
-        // checkIfEmptyHand(player);
-        await showSpeechBubble(player, 'Damn!');
-        highlightSuccess(`${PLAYERS_REF[PLAYER].playerName} took all ${card}s from ${PLAYERS_REF[player].playerName}!`);
-        updateMemories(card, player);
-        forgetRanks(await checkForSets());
-        await checkIfEmptyHand(PLAYER);
-        await showSpeechBubble(PLAYER, "My turn again!");
-        highlightInfo(`${PLAYERS_REF[PLAYER].playerName} gets to play again`);
-        showDetails();
-        await play(sessionId); // recursive call for extra turn
-    } else {
-        console.log(`${PLAYERS_REF[player].playerName} doesn't have any ${card}s for ${PLAYERS_REF[PLAYER].playerName}. `
-             + `${PLAYERS_REF[PLAYER].playerName} takes a card from the top of the deck.`);
-        await showSpeechBubble(player, 'Go Fish!');
-        await takeCardFromDeck(PLAYER);
-        updateMemories(card, player);
-        forgetRanks(await checkForSets());
-        await checkIfEmptyHand(PLAYER);
-        showDetails();
-    }
-});
 
 // Validate selection before allowing to proceed
 function isValidUserSelection() {
@@ -778,8 +836,8 @@ function isValidUserSelection() {
     }, (_, i) => i).filter(i => i !== PLAYER);
 
     return (
-        ranks.includes(USER_CHOSEN_RANK) &&
-        players.includes(USER_CHOSEN_PLAYER));
+        RANKS.includes(userChosenRank) &&
+        players.includes(userChosenPlayer));
 }
 
 async function handleUserTurn(sessionId) {
@@ -789,16 +847,16 @@ async function handleUserTurn(sessionId) {
     requestAnimationFrame(() => {
         askPlayerBtn.classList.add("fade-in");
     });
-    USER_ASKING = true;
-    USER_CHOSEN_RANK = null;
-    USER_CHOSEN_PLAYER = null;
+    userIsAsking = true;
+    userChosenRank = null;
+    userChosenPlayer = null;
 
     toggleAvatarClickStyle(true);
     toggleCardClickListeners(true);
 
-    console.log('Waiting for ${{PLAYERS_REF[PLAYER].playerName}} to choose card and player...');
+    logMessage('Waiting for ${{PLAYERS_REF[PLAYER].playerName}} to choose card and player...');
     askPlayerBtn.addEventListener('click', onClickAsk);
-    await waitUntilToggled(() => !USER_ASKING);
+    await waitUntilToggled(() => !userIsAsking);
 
     toggleAvatarClickStyle(false);
     toggleCardClickListeners(false);
@@ -810,18 +868,43 @@ async function handleUserTurn(sessionId) {
     askPlayerBtn.classList.remove('fade-in');
     askPlayerBtn.classList.remove("grow-and-fade-out");
 
-    console.log(`${PLAYERS_REF[PLAYER].playerName} asks {PLAYERS_REF[USER_CHOSEN_PLAYER].playerName} for ${USER_CHOSEN_RANK}s`);
-    await guessPlayerOrGoFish(sessionId, USER_CHOSEN_PLAYER, USER_CHOSEN_RANK);
+    logMessage(`${PLAYERS_REF[PLAYER].playerName} asks {PLAYERS_REF[userChosenPlayer].playerName} for ${userChosenRank}s`);
+    await guessPlayerOrGoFish(sessionId, userChosenPlayer, userChosenRank, `Hey ${PLAYERS_REF[userChosenPlayer].playerName}, got any ${userChosenRank}s?`);
 }
 
+const guessPlayerOrGoFish = checkSession(async function (sessionId, player, card, guess) {
+    const cond = playerVsAI && PLAYER === 0;
+    await showSpeechBubble(PLAYER, guess);
+    if (await takeCardFromPlayer(player, card)) {
+        await showSpeechBubble(player, 'Damn!');
+        highlightSuccess(`${PLAYERS_REF[PLAYER].playerName} took all ${card}s from ${PLAYERS_REF[player].playerName}!`);
+        updateMemories(card, player);
+        forgetRanks(await checkForSets());
+        await checkIfEmptyHand(PLAYER);
+        await showSpeechBubble(PLAYER, "My turn again!");
+        highlightInfo(`${PLAYERS_REF[PLAYER].playerName} gets to play again`);
+        showDetails();
+        await play(sessionId); // recursive call for extra turn
+    } else {
+        logMessage(`${PLAYERS_REF[player].playerName} doesn't have any ${card}s for ${PLAYERS_REF[PLAYER].playerName}. `
+             + `${PLAYERS_REF[PLAYER].playerName} takes a card from the top of the deck.`);
+        await showSpeechBubble(player, 'Go Fish!');
+        await takeCardFromDeck(PLAYER);
+        updateMemories(card, player);
+        forgetRanks(await checkForSets());
+        await checkIfEmptyHand(PLAYER);
+        showDetails();
+    }
+});
+
 const play = checkSession(async function (sessionId) {
-    const delayMs = PLAYER_VS_AI ? 500 : 500;
+    const delayMs = playerVsAI ? 500 : 500;
     await delay(delayMs);
-    const cond = PLAYER_VS_AI && PLAYER === 0;
+    const cond = playerVsAI && PLAYER === 0;
     await checkIfEmptyHand(PLAYER);
     if (HANDS[PLAYER] && HANDS[PLAYER].length === 0) {
         await showSpeechBubble(PLAYER, "I am just a spectator now!");
-        console.log(`${PLAYERS_REF[PLAYER].playerName} has no cards left, and the deck has ${DECK.length} card(s). Player's turn is skipped.`);
+        logMessage(`${PLAYERS_REF[PLAYER].playerName} has no cards left, and the deck has ${DECK.length} card(s). Player's turn is skipped.`);
         return;
     }
 
@@ -829,46 +912,49 @@ const play = checkSession(async function (sessionId) {
         await handleUserTurn(sessionId);
     } else {
         const cardsByRank = getMostNeededCards();
-        if (!PLAYER_VS_AI) {
-            console.log(`${PLAYERS_REF[PLAYER].playerName} is looking for any cards in the set: ${cardsByRank}`);
+        if (!playerVsAI) {
+            logMessage(`${PLAYERS_REF[PLAYER].playerName} is looking for any cards in the set: ${cardsByRank}`);
         }
 
         const playerToAsk = getMostFavourablePlayer(cardsByRank);
 
         if (!playerToAsk) {
-            console.log(`${PLAYERS_REF[PLAYER].playerName} doesn't know who the best person to ask is.`);
+            logMessage(`${PLAYERS_REF[PLAYER].playerName} doesn't know who the best person to ask is.`);
             await showSpeechBubble(PLAYER, "Hmmmmm...");
 
             const players = Object.keys(MEMORIES[PLAYER]).map(Number);
             const chosenPlayer = players[Math.floor(Math.random() * players.length)];
             const chosenCard = cardsByRank[Math.floor(Math.random() * cardsByRank.length)];
 
-            console.log(`${PLAYERS_REF[PLAYER].playerName} has decided to ask ${PLAYERS_REF[chosenPlayer].playerName} for ${chosenCard}s`);
-            await guessPlayerOrGoFish(sessionId, chosenPlayer, chosenCard);
+            logMessage(`${PLAYERS_REF[PLAYER].playerName} has decided to ask ${PLAYERS_REF[chosenPlayer].playerName} for ${chosenCard}s`);
+            await guessPlayerOrGoFish(sessionId, chosenPlayer, chosenCard, `Hey ${PLAYERS_REF[chosenPlayer].playerName}, got any ${chosenCard}s?`);
         } else {
-            const cond2 = PLAYER_VS_AI && playerToAsk[0] === 0;
+            const cond2 = playerVsAI && playerToAsk[0] === 0;
             const chosenCard = playerToAsk[1][Math.floor(Math.random() * playerToAsk[1].length)];
 
-            console.log(`${PLAYERS_REF[PLAYER].playerName} believes ${PLAYERS_REF[playerToAsk[0]].playerName} has the cards they need...`);
-            console.log(`${PLAYERS_REF[PLAYER].playerName} has decided to ask ${PLAYERS_REF[playerToAsk[0]].playerName} for ${chosenCard}s`);
+            logMessage(`${PLAYERS_REF[PLAYER].playerName} believes ${PLAYERS_REF[playerToAsk[0]].playerName} has the cards they need...`);
+            logMessage(`${PLAYERS_REF[PLAYER].playerName} has decided to ask ${PLAYERS_REF[playerToAsk[0]].playerName} for ${chosenCard}s`);
 
-            await showSpeechBubble(PLAYER, `${PLAYERS_REF[playerToAsk[0]].playerName}, give me your ${chosenCard}s!`);
-            await takeCardFromPlayer(playerToAsk[0], chosenCard);
-            await showSpeechBubble(playerToAsk[0], 'Damn!');
-            highlightSuccess(`${PLAYERS_REF[PLAYER].playerName} took all ${chosenCard}s from ${PLAYERS_REF[playerToAsk[0]].playerName}!`);
-            updateMemories(chosenCard, playerToAsk[0]);
-            forgetRanks(await checkForSets());
-            await checkIfEmptyHand(PLAYER);
-            await showSpeechBubble(PLAYER, "My turn again!");
-            highlightInfo(`${PLAYERS_REF[PLAYER].playerName} gets to play again`);
-            showDetails();
-            await play(sessionId); // recursive call for extra turn
+            // bots can still be 'forgetful' sometimes, so need to check both cases
+            await guessPlayerOrGoFish(sessionId, playerToAsk[0], chosenCard, `${PLAYERS_REF[playerToAsk[0]].playerName}, give me your ${chosenCard}s!`);
+
+            // await showSpeechBubble(PLAYER, `${PLAYERS_REF[playerToAsk[0]].playerName}, give me your ${chosenCard}s!`);
+            // await takeCardFromPlayer(playerToAsk[0], chosenCard)
+            // await showSpeechBubble(playerToAsk[0], 'Damn!');
+            // highlightSuccess(`${PLAYERS_REF[PLAYER].playerName} took all ${chosenCard}s from ${PLAYERS_REF[playerToAsk[0]].playerName}!`);
+            // updateMemories(chosenCard, playerToAsk[0]);
+            // forgetRanks(await checkForSets());
+            // await checkIfEmptyHand(PLAYER);
+            // await showSpeechBubble(PLAYER, "My turn again!");
+            // highlightInfo(`${PLAYERS_REF[PLAYER].playerName} gets to play again`);
+            // showDetails();
+            // await play(sessionId); // recursive call for extra turn
         }
     }
 });
 
 const showWinner = checkSession(function (sessionId) {
-    if (!GAME_OVER || GAME_QUITTED)
+    if (!gameOver || gameQuitted)
         return;
     const mostSets = Math.max(...Object.values(SETS).map(v => v.length));
     const winners = Object.entries(SETS)
@@ -879,9 +965,9 @@ const showWinner = checkSession(function (sessionId) {
     const winMsg = (winNames.length > 1 ? "The winners are " : "The winner is ") + winNames.join(' and ') + (winNames.length > 1 ? "!! It's a tie!" : "!!");
     highlightSuccess(winMsg);
 
-    console.log("%c\nGame results (sets made by players):", LOG_FONT_STYLE);
+    logMessage("%c\nGame results (sets made by players):", logFontStyle);
     for (const s in SETS) {
-        console.log(`%c${PLAYERS_REF[s].playerName}: ${SETS[s]}`, LOG_FONT_STYLE);
+        logMessage(`%c${PLAYERS_REF[s].playerName}: ${SETS[s]}`, logFontStyle);
     }
 });
 
@@ -890,19 +976,19 @@ const gameLoop = checkSession(async function (sessionId) {
 
     await play(sessionId);
 
-    console.log(`%cCards remaining in DECK: ${DECK.length}`, LOG_FONT_STYLE);
-    console.log("%cCurrent players sets:", LOG_FONT_STYLE);
+    logMessage(`%cCards remaining in DECK: ${DECK.length}`, logFontStyle);
+    logMessage("%cCurrent players sets:", logFontStyle);
     for (const s in SETS) {
         const playerName = PLAYERS_REF[s].playerName;
-        console.log(`%c${playerName}: ${SETS[s]}`, LOG_FONT_STYLE);
+        logMessage(`%c${playerName}: ${SETS[s]}`, logFontStyle);
     }
-    console.log('\n');
+    logMessage('\n');
     highlightPlayerLabel(PLAYER, false);
 
     PLAYER = (PLAYER + 1) % PLAYER_COUNT;
     const allEmpty = DECK.length === 0 && Object.values(HANDS).every(hand => hand.length === 0);
     if (allEmpty) {
-        GAME_OVER = true;
+        gameOver = true;
         return;
     }
 
@@ -927,7 +1013,7 @@ function toggleAvatarClickStyle(toggle) {
         // Enable glow-hover on all avatars except the current player
         Object.values(PLAYERS_REF).forEach(avatar => {
             if (avatar.avatarId !== PLAYER) {
-                console.log(avatar.avatarId);
+                logMessage(avatar.avatarId);
                 avatar.classList.add('glow');
             }
         });
@@ -951,12 +1037,12 @@ function resetHandPosition(player) {
 function onClickAsk() {
     if (isValidUserSelection()) {
         askPlayerBtn.removeEventListener('click', onClickAsk);
-        USER_ASKING = false;
+        userIsAsking = false;
     } else {
         // Shake the button or flash to indicate invalid
-        askPlayerBtn.style.animation = 'floating-btn-shake 0.3s';
+        askPlayerBtn.classList.add('vertical-shake');
         askPlayerBtn.addEventListener('animationend', () => {
-            askPlayerBtn.style.animation = '';
+            askPlayerBtn.classList.remove('vertical-shake');
         }, {
             once: true
         });
@@ -964,7 +1050,7 @@ function onClickAsk() {
 }
 
 async function onClickCard(event) {
-    if (!GAME_START || !(PLAYER_VS_AI && PLAYER === 0))
+    if (!gameStart || !(playerVsAI && PLAYER === 0))
         return;
 
     const clickedCard = event.currentTarget;
@@ -974,11 +1060,11 @@ async function onClickCard(event) {
     const angle = clickedCard.dataset.angle || "0";
     clickedCard.style.transform = `rotate(${angle}deg) translateY(-20px) scale(1.05)`;
     clickedCard.style.zIndex = "888"; // bring on top
-    USER_CHOSEN_RANK = clickedCard.cardValue.split('of')[0];
+    userChosenRank = clickedCard.cardValue.split('of')[0];
 }
 
 async function onClickPlayer(event) {
-    if (!GAME_START || !(PLAYER_VS_AI && PLAYER === 0))
+    if (!gameStart || !(playerVsAI && PLAYER === 0))
         return;
 
     const clickedAvatar = event.currentTarget;
@@ -987,23 +1073,23 @@ async function onClickPlayer(event) {
     if (playerId === PLAYER)
         return; // ignore self-click
 
-    USER_CHOSEN_PLAYER = playerId;
-	 clickedAvatar.classList.add('tilt-shake');
+    userChosenPlayer = playerId;
+    clickedAvatar.classList.add('tilt-shake');
     clickedAvatar.addEventListener('animationend', () => {
-		  clickedAvatar.classList.remove('tilt-shake');
+        clickedAvatar.classList.remove('tilt-shake');
     }, {
         once: true
     });
 }
 
 function generateRandomName() {
-    if (BOT_NAME_STYLE == 0) {
-        const first = fictionFirstParts; // from your first scheme
-        const second = fictionSecondParts;
+    if (botNamingStyle == 0) {
+        const first = NAMING_IMAGINARY_FIRST_PTS; // from your first scheme
+        const second = NAMING_IMAGINARY_SECOND_PTS;
         return choice(first) + choice(second);
     } else {
-        const first = descriptiveFirstParts; // from your second scheme
-        const second = descriptiveSecondParts;
+        const first = NAMING_DESCRIPTIVE_FIRST_PTS; // from your second scheme
+        const second = NAMING_DESCRIPTIVE_SECOND_PTS;
         return choice(first) + choice(second);
     }
 }
@@ -1015,105 +1101,11 @@ function renderPlayers() {
     const playerContainer = document.createElement("div");
     playerContainer.id = "player-container";
 
-    const isHumanPlayer = PLAYER_VS_AI;
+    const isHumanPlayer = playerVsAI;
 
     // === POSITION LOGIC ===
     const total = PLAYER_COUNT;
     let index = 0;
-
-    const nPos = { // preset naming positioning styles
-        l: {
-            top: "58%",
-            left: "4%",
-            right: "auto",
-            bottom: "auto"
-        }, // LEFT
-        r: {
-            top: "58%",
-            left: "auto",
-            right: "6%",
-            bottom: "auto"
-        }, // RIGHT
-        tl: {
-            top: "20%",
-            left: "20%",
-            right: "auto",
-            bottom: "auto"
-        }, // TOP LEFT
-        tr: {
-            top: "20%",
-            left: "auto",
-            right: "23%",
-            bottom: "auto"
-        }, // TOP RIGHT
-        bl: {
-            top: "auto",
-            left: "20%",
-            right: "auto",
-            bottom: "5%"
-        }, // BOTTOM LEFT
-        br: {
-            top: "auto",
-            left: "auto",
-            right: "23%",
-            bottom: "5%"
-        }, // BOTTOM RIGHT
-        t: {
-            top: "20%",
-            left: "46%",
-            right: "auto",
-            bottom: "auto"
-        }, // TOP
-        b: {
-            top: "auto",
-            left: "46%",
-            right: "auto",
-            bottom: "4%"
-        } // BOTTOM
-    };
-
-    const aPos = { // preset avatar positioning styles
-        l: {
-            top: "50%",
-            left: "5%",
-            transform: "translateY(-50%)"
-        },
-        r: {
-            top: "50%",
-            right: "5%",
-            transform: "translateY(-50%)"
-        },
-        tl: {
-            top: "5%",
-            left: "25%",
-            transform: "translateX(-50%)"
-        },
-        tr: {
-            top: "5%",
-            right: "25%",
-            transform: "translateX(50%)"
-        },
-        bl: {
-            bottom: "10%",
-            left: "25%",
-            transform: "translateX(-50%)"
-        },
-        br: {
-            bottom: "10%",
-            right: "25%",
-            transform: "translateX(50%)"
-        },
-        t: {
-            top: "5%",
-            left: "50%",
-            transform: "translateX(-50%)"
-        },
-        b: {
-            bottom: "10%",
-            left: "50%",
-            transform: "translateX(-50%)"
-        },
-    };
 
     if (total === 2) {
         if (isHumanPlayer) {
@@ -1154,7 +1146,7 @@ function renderPlayers() {
     }
 
     // === USER PLAY AREA (only if human player) ===
-    if (PLAYER_VS_AI) {
+    if (playerVsAI) {
         const userArea = document.createElement("div");
         userArea.classList.add("user-play-area");
 
@@ -1175,13 +1167,14 @@ function renderPlayers() {
         }
 
         // Set size and appearance
-        Object.assign(userArea.style, {
-            position: "absolute",
-            width: "600px",
-            height: "200px",
-            zIndex: 900,
-            ...userStyle
-        });
+        Object.assign(userArea.style, userStyle);
+        // Object.assign(userArea.style, {
+        // position: "absolute",
+        // width: "600px",
+        // height: "200px",
+        // zIndex: 900,
+        // ...userStyle
+        // });
 
         // Assign ID and Name
         const playerName = playerNameInput.value.trim();
@@ -1195,7 +1188,7 @@ function renderPlayers() {
 
         playerContainer.appendChild(userArea);
         PLAYERS_REF.push(userArea);
-        PLAYER_LABELS_REF.push(null); // just a hacky way to avoid using highlightPlayerLabel for user player
+        PLAYER_LABELS_REF.push(null); // just a hack to avoid running highlightPlayerLabel on user player on their turn
     }
 
     // === CREATE NPC PLAYER ELEMENTS ===
@@ -1210,7 +1203,7 @@ function renderPlayers() {
         avatarImg.alt = `Player ${i}`;
 
         // Assign ID and Name
-        const id = PLAYER_VS_AI ? i + 1 : i;
+        const id = playerVsAI ? i + 1 : i;
         const playerName = generateRandomName();
         avatarImg.dataset.id = id; // Optional for HTML-side use
         avatarImg.avatarId = id; // JS-side custom property
@@ -1298,11 +1291,11 @@ function renderCardDeck() {
     cardDeckContainer.id = "card-deck-container";
 
     // Choose a card back design randomly or set one explicitly
-    backDesign = `./assets/cards/designs/back${Math.floor(Math.random() * 4) + 1}.png`;
+    cardBackDesignSrc = `./assets/cards/designs/back${Math.floor(Math.random() * 4) + 1}.png`;
 
     // create the actual deck of card strings
-    for (const rank of ranks) {
-        for (const suit of suits) {
+    for (const rank of RANKS) {
+        for (const suit of SUITS) {
             DECK.push(`${rank}of${suit}`);
         }
     }
@@ -1311,7 +1304,7 @@ function renderCardDeck() {
 
     for (let i = 0; i < 52; i++) {
         const card = document.createElement("img");
-        card.src = backDesign;
+        card.src = cardBackDesignSrc;
         card.cardValue = DECK[i]; // Assign each deck card its corresponding actual value in DECK
         card.classList.add("card-back");
 
@@ -1406,8 +1399,9 @@ function showFloatingText(playerId, text, type = "gain") {
 
     // Animate with delay before removing
     setTimeout(() => {
-        textEl.style.opacity = "0";
-        textEl.style.transform = "translate(-50%, -60px)";
+        textEl.classList.add("remove");
+        // textEl.style.opacity = "0";
+        // textEl.style.transform = "translate(-50%, -60px)";
     }, 10); // slight delay to ensure CSS transition applies
 
     setTimeout(() => {
@@ -1423,7 +1417,7 @@ function positionPlayerHand(playerId) {
     const avatar = PLAYERS_REF[playerId];
     const gameRect = gameScreen.getBoundingClientRect();
 
-    if (PLAYER_VS_AI && playerId === 0) {
+    if (playerVsAI && playerId === 0) {
         // === Human player: Horizontal arc-fan inside user area ===
         const area = document.getElementById("user-play-area");
         if (!area)
@@ -1497,7 +1491,7 @@ async function flipCardToFace(card, cvalue) {
     if (typeof cvalue === "string") {
         card.src = `./assets/cards/deck/${cvalue}.png`;
     } else {
-        card.src = backDesign;
+        card.src = cardBackDesignSrc;
     }
 
     // Complete the flip
@@ -1506,13 +1500,13 @@ async function flipCardToFace(card, cvalue) {
 }
 
 function updateOpponentCardVisibility(playerId) {
-    if (PLAYER_VS_AI && playerId === 0)
+    if (playerVsAI && playerId === 0)
         return;
 
     for (let i = 0; i < HANDS_REF[playerId]?.length; i++) {
         const cardRef = HANDS_REF[playerId][i];
         const cardValue = HANDS[playerId][i];
-        if (SHOW_OPP_INFO) {
+        if (showOpponentInfo) {
             flipCardToFace(cardRef, cardValue);
         } else {
             flipCardToFace(cardRef); // No value = flip to back
@@ -1558,14 +1552,15 @@ async function takeCardFromDeck(playerId) {
     const startLeft = cardRect.left - gameRect.left;
     const startTop = cardRect.top - gameRect.top;
 
-    card.style.position = "absolute";
     card.style.left = `${startLeft}px`;
     card.style.top = `${startTop}px`;
     card.style.width = `${cardRect.width}px`;
     card.style.height = `${cardRect.height}px`;
-    card.style.zIndex = 1000;
     card.style.willChange = "transform, top, left, width, height";
-    card.style.transition = "transform 0.5s ease, left 0.5s ease, top 0.5s ease, width 0.5s ease, height 0.5s ease";
+    card.classList.add("card-take");
+    // card.style.position = "absolute";
+    // card.style.zIndex = 1000;
+    // card.style.transition = "transform 0.5s ease, left 0.5s ease, top 0.5s ease, width 0.5s ease, height 0.5s ease";
 
     // Compute target position
     const avatarRect = avatar.getBoundingClientRect();
@@ -1577,12 +1572,14 @@ async function takeCardFromDeck(playerId) {
         card.style.left = `${targetX}px`;
         card.style.top = `${targetY}px`;
         // Apply different sizes for human player
-        if (PLAYER_VS_AI && playerId === 0) {
-            card.style.width = `128px`;
-            card.style.height = `180px`;
+        if (playerVsAI && playerId === 0) {
+            card.classList.add("user");
+            // card.style.width = `128px`;
+            // card.style.height = `180px`;
         } else {
-            card.style.width = `32px`;
-            card.style.height = `45px`;
+            card.classList.add("bot");
+            // card.style.width = `32px`;
+            // card.style.height = `45px`;
         }
     });
 
@@ -1603,7 +1600,7 @@ async function takeCardFromDeck(playerId) {
     positionPlayerHand(playerId);
 
     // === If human player, flip to reveal ===
-    if ((PLAYER_VS_AI && playerId === 0) || SHOW_OPP_INFO) {
+    if ((playerVsAI && playerId === 0) || showOpponentInfo) {
         flipCardToFace(card, cardValue);
     }
 }
@@ -1674,20 +1671,21 @@ async function animateTakingCardFromPlayer(player, rank) {
         const startTop = cardRect.top - gameRect.top;
 
         gameScreen.appendChild(card);
-        card.style.position = "absolute";
         card.style.left = `${startLeft}px`;
         card.style.top = `${startTop}px`;
         card.style.width = `${cardRect.width}px`;
         card.style.height = `${cardRect.height}px`;
-        card.style.zIndex = 1000;
-        card.style.transition = "transform 0.5s ease, left 0.5s ease, top 0.5s ease, width 0.5s ease, height 0.5s ease";
+        card.classList.add("card-take");
+        // card.style.position = "absolute";
+        // card.style.zIndex = 1000;
+        // card.style.transition = "transform 0.5s ease, left 0.5s ease, top 0.5s ease, width 0.5s ease, height 0.5s ease";
 
         // Determine target:
         let targetX,
         targetY,
         finalWidth,
         finalHeight;
-        if (PLAYER_VS_AI && PLAYER === 0) {
+        if (playerVsAI && PLAYER === 0) {
             // Player takes from NPC (already works)
             const area = document.getElementById("user-play-area");
             const areaRect = area.getBoundingClientRect();
@@ -1717,12 +1715,12 @@ async function animateTakingCardFromPlayer(player, rank) {
         // Collect card into receiver hand
         receiverHand.push(cardValue);
         receiverHandRef.push(card);
-        card.style.willChange = "";
+        // card.style.willChange = "";
 
         positionPlayerHand(PLAYER); // Refan cards of current player/receiver
 
         // Flip logic
-        if (PLAYER_VS_AI) {
+        if (playerVsAI) {
             if (PLAYER === 0) {
                 // 🂠 Player takes card from NPC: Flip to show front
                 await new Promise(res => {
@@ -1736,10 +1734,11 @@ async function animateTakingCardFromPlayer(player, rank) {
                 });
 
                 card.style.transition = "transform 0.3s";
-                card.style.transform += " rotateY(90deg)";
-                await delay(300);
-                card.src = `./assets/cards/deck/${cardValue}.png`;
-                card.style.transform = card.style.transform.replace("rotateY(90deg)", "rotateY(0deg)");
+                flipCardToFace(card, cardValue);
+                // card.style.transform += " rotateY(90deg)";
+                // await delay(300);
+                // card.src = `./assets/cards/deck/${cardValue}.png`;
+                // card.style.transform = card.style.transform.replace("rotateY(90deg)", "rotateY(0deg)");
 
             } else if (player === 0) {
                 // 🂠 NPC takes card from player: Flip to show back
@@ -1754,10 +1753,11 @@ async function animateTakingCardFromPlayer(player, rank) {
                 });
 
                 card.style.transition = "transform 0.3s";
-                card.style.transform += " rotateY(90deg)";
-                await delay(300);
-                card.src = backDesign; // Your card back image path
-                card.style.transform = card.style.transform.replace("rotateY(90deg)", "rotateY(0deg)");
+                flipCardToFace(card);
+                // card.style.transform += " rotateY(90deg)";
+                // await delay(300);
+                // card.src = cardBackDesignSrc; // Your card back image path
+                // card.style.transform = card.style.transform.replace("rotateY(90deg)", "rotateY(0deg)");
             }
         }
     }
@@ -1768,7 +1768,7 @@ async function animateTakingCardFromPlayer(player, rank) {
 function waitUntilToggled(flagFn, interval = 1000) {
     return new Promise(resolve => {
         const check = setInterval(() => {
-            console.log("waiting");
+            logMessage(`--waited ${interval}ms--`);
             if (flagFn()) {
                 clearInterval(check);
                 resolve();
@@ -1777,19 +1777,46 @@ function waitUntilToggled(flagFn, interval = 1000) {
     });
 }
 
+function createSets() {
+    function randomNumSets() {
+        return Math.floor(Math.random() * 5); // 0 to 4 sets
+    }
+
+    function getRandomRank(usedRanks) {
+        let rank;
+        do {
+            rank = RANKS[Math.floor(Math.random() * RANKS.length)];
+        } while (usedRanks.has(rank));
+        usedRanks.add(rank);
+        return rank;
+    }
+
+    // Initialize or update the SETS object with random values
+    for (const playerId of Object.keys(SETS)) {
+        const numSets = randomNumSets();
+        const used = new Set(); // Avoid duplicate ranks per player
+        SETS[playerId] = [];
+
+        for (let i = 0; i < numSets; i++) {
+            SETS[playerId].push(getRandomRank(used));
+        }
+    }
+}
+
 async function setupGameScreen() {
-    GAME_SESSION_ID++; // 🔄 Invalidate any pending operations from older games
+    currentGameSessionId++; // 🔄 Invalidate any pending operations from older games
     // Create game screen from template
     gameScreen = document.createElement("div");
     gameScreen.id = "game-screen";
     gameScreen.style.display = "none";
     gameScreen.innerHTML = `
-     <button id="menu-btn" class="glow-btn menu-icon">☰</button>
-     <div id="menu-popup" style="display: none;">
-       <button id="close-menu-btn" class="glow-btn close-btn">✖</button>
+     <button id="menu-btn" class="glow-btn icon transparent">☰</button>
+     <div id="menu-subwindow" class= "translucent-light" style="display: none;">
+       <button id="close-menu-btn" class="glow-btn icon-small transparent">✖</button>
        <div class="menu-content">
-         <button class="glow-btn menu-option" id="toggle-sound">Sounds: ${SOUND_FX ? "On" : "Off"}</button>
-         <button class="glow-btn menu-option" id="toggle-opp-info">Show All Cards: ${SHOW_OPP_INFO ? "On" : "Off"}</button>
+         <button class="glow-btn menu-option" id="toggle-sound">Sounds: ${soundFx ? "On" : "Off"}</button>
+         <button class="glow-btn menu-option" id="toggle-opp-info">Show All Cards: ${showOpponentInfo ? "Yes" : "No"}</button>
+			<button class="glow-btn menu-option" id="toggle-log">Allow Logging: ${logMode ? "Yes" : "No"}</button>
          <button class="glow-btn menu-option" id="quit-game">Quit Game</button>
        </div>
      </div>
@@ -1801,11 +1828,12 @@ async function setupGameScreen() {
     document.body.appendChild(gameScreen);
     // Add event listeners
     menuBtn = document.getElementById("menu-btn");
-    menuPopup = document.getElementById("menu-popup");
+    menuSubwindow = document.getElementById("menu-subwindow");
     closeMenuBtn = document.getElementById("close-menu-btn");
     soundToggleMenuBtn = document.getElementById("toggle-sound");
-    oppInfoToggleBtn = document.getElementById("toggle-opp-info");
-    quitGameBtn = document.getElementById("quit-game");
+    oppInfoToggleMenuBtn = document.getElementById("toggle-opp-info");
+    matchLogsToggleMenuBtn = document.getElementById("toggle-log");
+    quitGameMenuBtn = document.getElementById("quit-game");
 
     await delay(1000); // wait one second before showing start button
 
@@ -1825,10 +1853,10 @@ async function setupGameScreen() {
         startGameBtn.classList.add("fade-in");
     });
 
-    GAME_QUITTED = false;
+    gameQuitted = false;
 
     startGameBtn.addEventListener("click", async() => {
-        const sessionId = GAME_SESSION_ID;
+        const sessionId = currentGameSessionId;
 
         startGameBtn.style.animation = "none";
         startGameBtn.textContent = `${PLAYERS_REF[PLAYER].playerName} takes the first turn!`;
@@ -1837,36 +1865,38 @@ async function setupGameScreen() {
         await delay(2000); // Wait for fade-out animation to complete before removing
         startGameBtn.remove(); // Remove from DOM itself
 
-        setupTrackers(PLAYER_COUNT);
+        initStateBuffers(PLAYER_COUNT);
         await dealInitialHands(sessionId, PLAYER_COUNT <= 4 ? 7 : 5);
 
-        GAME_START = true;
-        GAME_OVER = false;
+        gameStart = true;
+        gameOver = false;
 
         await gameLoop(sessionId); // ✅ Guaranteed to run after all cards are dealt
-        await waitUntilToggled(() => GAME_OVER); // 👈 Wait until game ends
+        // await waitUntilToggled(() => gameOver); // 👈 Wait until game ends
         // Game over: show final results
+        // createSets();
+        // console.log(SETS);
         showWinner(sessionId);
     }, {
         once: true
     });
 
     menuBtn.addEventListener('click', () => {
-        GAME_PAUSED = true;
-        menuPopup.style.display = 'block';
-        menuPopup.style.opacity = '0';
+        gamePaused = true;
+        menuSubwindow.style.display = 'block';
+        menuSubwindow.style.opacity = '0';
         menuBtn.classList.add('menu-open'); // Apply glow
         requestAnimationFrame(() => {
-            menuPopup.style.opacity = '1';
+            menuSubwindow.style.opacity = '1';
         });
     });
 
     closeMenuBtn.addEventListener('click', () => {
-        menuPopup.style.opacity = '0';
-        menuPopup.addEventListener('transitionend', () => {
-            menuPopup.style.display = 'none';
+        menuSubwindow.style.opacity = '0';
+        menuSubwindow.addEventListener('transitionend', () => {
+            menuSubwindow.style.display = 'none';
             menuBtn.classList.remove('menu-open'); // Remove glow
-            GAME_PAUSED = false; // ✅ resume game
+            gamePaused = false; // ✅ resume game
         }, {
             once: true
         });
@@ -1874,40 +1904,46 @@ async function setupGameScreen() {
 
     // --- Sounds toggle ---
     soundToggleMenuBtn.addEventListener("click", () => {
-        SOUND_FX = !SOUND_FX;
-        soundToggleMenuBtn.textContent = `Sounds: ${SOUND_FX ? "On" : "Off"}`;
+        soundFx = !soundFx;
+        soundToggleMenuBtn.textContent = `Sounds: ${soundFx ? "On" : "Off"}`;
     });
 
     // --- Info toggle ---
-    oppInfoToggleBtn.addEventListener("click", () => {
-        SHOW_OPP_INFO = !SHOW_OPP_INFO;
-        oppInfoToggleBtn.textContent = `Show All Cards: ${SHOW_OPP_INFO ? "On" : "Off"}`;
+    oppInfoToggleMenuBtn.addEventListener("click", () => {
+        showOpponentInfo = !showOpponentInfo;
+        oppInfoToggleMenuBtn.textContent = `Show All Cards: ${showOpponentInfo ? "Yes" : "No"}`;
         for (let playerId = 0; playerId < PLAYER_COUNT; playerId++) {
             updateOpponentCardVisibility(playerId);
         }
     });
 
+    // --- Logging toggle ---
+    matchLogsToggleMenuBtn.addEventListener("click", () => {
+        logMode = !logMode;
+        matchLogsToggleMenuBtn.textContent = `Allow Logging: ${logMode ? 'Yes' : "No"}`;
+    });
+
     // --- Quit game ---
-    quitGameBtn.addEventListener("click", async() => {
+    quitGameMenuBtn.addEventListener("click", async() => {
         // Fade out game screen
         gameScreen.classList.remove("active");
         gameScreen.style.opacity = 0;
 
         // Stop bubbles
-        if (bubbleInterval) {
-            clearInterval(bubbleInterval);
-            bubbleInterval = null;
+        if (bubbleIntervalId) {
+            clearInterval(bubbleIntervalId);
+            bubbleIntervalId = null;
         }
 
         // Hide menu popup
-        menuPopup.classList.remove("active");
+        menuSubwindow.classList.remove("active");
 
         // Clearing game counters/trackers/flags
-        GAME_START = false;
-        GAME_OVER = true;
-        GAME_PAUSED = false;
-        GAME_QUITTED = true;
-        USER_ASKING = false;
+        gameStart = false;
+        gameOver = true;
+        gamePaused = false;
+        gameQuitted = true;
+        userIsAsking = false;
         Object.keys(MEMORIES).forEach(key => delete MEMORIES[key]);
         Object.keys(HANDS).forEach(key => delete HANDS[key]);
         Object.keys(SETS).forEach(key => delete SETS[key]);
@@ -1928,7 +1964,7 @@ async function setupGameScreen() {
         startScreen.style.opacity = 1;
 
         // Restart bubbles
-        bubbleInterval = setInterval(spawnBubble, 500);
+        bubbleIntervalId = setInterval(spawnBubble, 500);
 
         // 🧹 Clean up any existing fishing line/hook
         const existingLineContainer = document.getElementById("fishing-line-container");
@@ -1989,7 +2025,7 @@ async function setupGameScreen() {
         document.body.appendChild(fish);
         // 🔁 Re-apply its functionality
         updateVelocity(); // Give it an initial movement vector
-        velocityInterval = setInterval(updateVelocity, 2500); // Change direction periodically
+        velocityIntervalId = setInterval(updateVelocity, 2500); // Change direction periodically
         animateFish(); // Start animation loop
         await delay(8000);
         if (fishCycleController) {
@@ -2004,9 +2040,9 @@ setTimeout(() => {
     requestAnimationFrame((ts) => updateGradient(performance.now()));
 }, 1000);
 spawnSeagrass(); // Call once when game loads
-bubbleInterval = setInterval(spawnBubble, 500); // Spawn one bubble every 0.5s (adjust as needed)
+bubbleIntervalId = setInterval(spawnBubble, 500); // Spawn one bubble every 0.5s (adjust as needed)
 updateVelocity();
-velocityInterval = setInterval(updateVelocity, 2500);
+velocityIntervalId = setInterval(updateVelocity, 2500);
 animateFish();
 setTimeout(() => {
     fishCycleController = startFishBlurCycle(); // Start the cycle once after initial delay
@@ -2029,16 +2065,16 @@ document.addEventListener('mousedown', (event) => {
     isMouseDown = true;
     mouseX = event.clientX;
     mouseY = event.clientY;
-    mouseHoldInterval = setInterval(() => {
-        const dx = mouseX - pos.x;
-        const dy = mouseY - pos.y;
+    mouseHoldIntervalId = setInterval(() => {
+        const dx = mouseX - fishPosition.x;
+        const dy = mouseY - fishPosition.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
         if (distance === 0)
             return;
 
         const speed = 2; // pixels per frame
-        targetVelocity.x = (dx / distance) * speed;
-        targetVelocity.y = (dy / distance) * speed;
+        targetFishVelocity.x = (dx / distance) * speed;
+        targetFishVelocity.y = (dy / distance) * speed;
     }, 30); // update ~33 times per second
 });
 
@@ -2053,30 +2089,30 @@ document.addEventListener('mouseup', () => {
     if (!isMouseDown)
         return;
     isMouseDown = false;
-    clearInterval(mouseHoldInterval);
-    mouseHoldInterval = null;
+    clearInterval(mouseHoldIntervalId);
+    mouseHoldIntervalId = null;
     // After releasing, go back to normal random wandering
     updateVelocity();
 });
 
 // Show Rules
 rulesBtn.addEventListener('click', () => {
-    fadeSwitch(startScreen, rulesScreen);
+    fadedScreenSwitch(startScreen, rulesScreen);
 });
 
 // Go Back to Splash
-backBtn.addEventListener('click', () => {
-    fadeSwitch(rulesScreen, startScreen);
+rulesToSplashBtn.addEventListener('click', () => {
+    fadedScreenSwitch(rulesScreen, startScreen);
 });
 
 // Show Match Options
 playBtn.addEventListener('click', () => {
-    fadeSwitch(startScreen, optionsScreen);
+    fadedScreenSwitch(startScreen, optionsScreen);
 });
 
 // Back from Match Options
-backToSplashBtn.addEventListener('click', () => {
-    fadeSwitch(optionsScreen, startScreen);
+optionsToSplashBtn.addEventListener('click', () => {
+    fadedScreenSwitch(optionsScreen, startScreen);
 });
 
 // Player slider update
@@ -2085,9 +2121,9 @@ playerSlider.addEventListener('input', () => {
     playerCount.textContent = playerSlider.value;
 });
 
-difficultyButtons.forEach(btn => {
+difficultyBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-        difficultyButtons.forEach(b => b.classList.remove('active'));
+        difficultyBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
         const selectedDifficulty = btn.textContent.trim();
@@ -2103,7 +2139,7 @@ difficultyButtons.forEach(btn => {
 
 // Expand input as user types
 playerNameInput.addEventListener('input', () => {
-    const parentHasClass = botToggleRow.classList.contains('with-input');
+    const parentHasClass = botToggleContainer.classList.contains('with-input'); // check if needed?
     if (!parentHasClass)
         return;
     const length = playerNameInput.value.length;
@@ -2113,45 +2149,45 @@ playerNameInput.addEventListener('input', () => {
 });
 
 botToggleBtn.addEventListener('click', () => {
-    PLAYER_VS_AI = !PLAYER_VS_AI;
-    botToggleBtn.textContent = PLAYER_VS_AI ? 'Yes' : 'No';
-    botToggleBtn.classList.toggle('false', !PLAYER_VS_AI);
-    if (PLAYER_VS_AI) {
+    playerVsAI = !playerVsAI;
+    botToggleBtn.textContent = playerVsAI ? 'Yes' : 'No';
+    botToggleBtn.classList.toggle('false', !playerVsAI);
+    if (playerVsAI) {
         botToggleBtn.classList.add('active');
-        botToggleRow.classList.add('with-input');
+        botToggleContainer.classList.add('with-input');
     } else {
         botToggleBtn.classList.remove('active');
-        botToggleRow.classList.remove('with-input');
+        botToggleContainer.classList.remove('with-input');
         // get rid of the element.style set above in the event handler, so it reverts to css styles for width
         playerNameInput.style.width = '';
     }
 });
 
 botNamingToggleBtn.addEventListener("click", (e) => {
-    const classic = botNamingToggleBtn.querySelector(".classic-label");
-    const descriptive = botNamingToggleBtn.querySelector(".descriptive-label");
+    const classic = botNamingToggleBtn.querySelector(".naming-imaginary");
+    const descriptive = botNamingToggleBtn.querySelector(".naming-descriptive");
 
     // Check where user clicked
-    const clickedDescriptive = e.target.classList.contains("descriptive-label");
-    const clickedClassic = e.target.classList.contains("classic-label");
+    const clickedDescriptive = e.target.classList.contains("naming-descriptive");
+    const clickedClassic = e.target.classList.contains("naming-imaginary");
 
     if (!clickedDescriptive && !clickedClassic)
         return; // Ignore empty clicks
 
-    if (clickedDescriptive && BOT_NAME_STYLE !== 1) {
-        BOT_NAME_STYLE = 1;
+    if (clickedDescriptive && botNamingStyle !== 1) {
+        botNamingStyle = 1;
         classic.classList.remove("active");
         descriptive.classList.add("active");
-    } else if (clickedClassic && BOT_NAME_STYLE !== 0) {
-        BOT_NAME_STYLE = 0;
+    } else if (clickedClassic && botNamingStyle !== 0) {
+        botNamingStyle = 0;
         descriptive.classList.remove("active");
         classic.classList.add("active");
     }
 });
 
 soundToggleBtn.addEventListener("click", () => {
-    SOUND_FX = !SOUND_FX;
-    const iconPath = SOUND_FX
+    soundFx = !soundFx;
+    const iconPath = soundFx
          ? "./assets/misc/speaker.png"
          : "./assets/misc/speakeroff.png";
     soundToggleBtn.style.backgroundImage = `url('${iconPath}')`;
@@ -2159,7 +2195,7 @@ soundToggleBtn.addEventListener("click", () => {
 
 goBtn.addEventListener('click', debounce(() => {
         // Stop spawning new bubbles and fishing line
-        clearInterval(bubbleInterval);
+        clearInterval(bubbleIntervalId);
         if (fishingCycleController) {
             fishingCycleController.abort();
         }
@@ -2183,7 +2219,7 @@ goBtn.addEventListener('click', debounce(() => {
 
             // Stop fish updates
             cancelAnimationFrame(fishAnimationFrameId);
-            clearInterval(velocityInterval);
+            clearInterval(velocityIntervalId);
             if (fishCycleController) {
                 fishCycleController.abort();
             }
@@ -2194,5 +2230,5 @@ goBtn.addEventListener('click', debounce(() => {
         }
         setupGameScreen();
         // Fade out current widgets
-        fadeSwitch(optionsScreen, gameScreen);
+        fadedScreenSwitch(optionsScreen, gameScreen);
     }));
