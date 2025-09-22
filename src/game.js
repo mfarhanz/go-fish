@@ -35,6 +35,7 @@ let targetFishVelocity = {
 let cardBackDesignSrc;
 const SUITS = ['C', 'D', 'H', 'S'];
 const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+// const RANKS = ['A', '2'];
 const NAMING_IMAGINARY_FIRST_PTS = [
     "Cor", "Fin", "Bub", "Mar", "Shel", "Ree", "Tide", "Peb", "Glim", "Whis",
     "Nim", "Blip", "Echo", "Wave", "Drip", "Mist", "Sal", "Aqua", "Gush", "Flo",
@@ -73,100 +74,109 @@ const NAMING_DESCRIPTIVE_SECOND_PTS = [
     "Vortex", "Howler", "Rift", "Vapor", "Echo", "Flare", "Tremor", "Surge", "Veil", "Harpoon"
 ];
 
-const nPos = { // preset naming positioning styles
-        l: {
-            top: "58%",
-            left: "4%",
-            right: "auto",
-            bottom: "auto"
-        }, // LEFT
-        r: {
-            top: "58%",
-            left: "auto",
-            right: "6%",
-            bottom: "auto"
-        }, // RIGHT
-        tl: {
-            top: "20%",
-            left: "20%",
-            right: "auto",
-            bottom: "auto"
-        }, // TOP LEFT
-        tr: {
-            top: "20%",
-            left: "auto",
-            right: "23%",
-            bottom: "auto"
-        }, // TOP RIGHT
-        bl: {
-            top: "auto",
-            left: "20%",
-            right: "auto",
-            bottom: "5%"
-        }, // BOTTOM LEFT
-        br: {
-            top: "auto",
-            left: "auto",
-            right: "23%",
-            bottom: "5%"
-        }, // BOTTOM RIGHT
-        t: {
-            top: "20%",
-            left: "46%",
-            right: "auto",
-            bottom: "auto"
-        }, // TOP
-        b: {
-            top: "auto",
-            left: "46%",
-            right: "auto",
-            bottom: "4%"
-        } // BOTTOM
-    };
+const LOTTIE_URLS = [
+  "https://lottie.host/6cc9bec0-d34e-47a8-9bae-b277b6e5de19/8UnKUbuvgw.lottie",
+  "https://lottie.host/9b018dba-1d7e-4b2e-afa1-57eb2c29fcf9/nfgumwhrB6.lottie",
+  "https://lottie.host/d534f75e-ad7c-476c-bf41-31d04b369ba1/r9lcb3uEoZ.lottie",
+  "https://lottie.host/03e783f5-1742-4b8b-ae7c-d4c3ad062a95/LgmJm2R3Cm.lottie",
+  "https://lottie.host/2cc6ae6f-434b-4468-9295-72bd996123ef/n1BtjQD3il.lottie",
+  "https://lottie.host/b7d8667f-e510-4301-b0d0-7223bc0152f6/ovR6UDQz1c.lottie"
+];
 
-    const aPos = { // preset avatar positioning styles
-        l: {
-            top: "50%",
-            left: "5%",
-            transform: "translateY(-50%)"
-        },
-        r: {
-            top: "50%",
-            right: "5%",
-            transform: "translateY(-50%)"
-        },
-        tl: {
-            top: "5%",
-            left: "25%",
-            transform: "translateX(-50%)"
-        },
-        tr: {
-            top: "5%",
-            right: "25%",
-            transform: "translateX(50%)"
-        },
-        bl: {
-            bottom: "10%",
-            left: "25%",
-            transform: "translateX(-50%)"
-        },
-        br: {
-            bottom: "10%",
-            right: "25%",
-            transform: "translateX(50%)"
-        },
-        t: {
-            top: "5%",
-            left: "50%",
-            transform: "translateX(-50%)"
-        },
-        b: {
-            bottom: "10%",
-            left: "50%",
-            transform: "translateX(-50%)"
-        },
-    };
-	 
+const nPos = { // preset naming positioning styles
+    l: {
+        top: "58%",
+        left: "4%",
+        right: "auto",
+        bottom: "auto"
+    }, // LEFT
+    r: {
+        top: "58%",
+        left: "auto",
+        right: "6%",
+        bottom: "auto"
+    }, // RIGHT
+    tl: {
+        top: "20%",
+        left: "20%",
+        right: "auto",
+        bottom: "auto"
+    }, // TOP LEFT
+    tr: {
+        top: "20%",
+        left: "auto",
+        right: "23%",
+        bottom: "auto"
+    }, // TOP RIGHT
+    bl: {
+        top: "auto",
+        left: "20%",
+        right: "auto",
+        bottom: "5%"
+    }, // BOTTOM LEFT
+    br: {
+        top: "auto",
+        left: "auto",
+        right: "23%",
+        bottom: "5%"
+    }, // BOTTOM RIGHT
+    t: {
+        top: "20%",
+        left: "46%",
+        right: "auto",
+        bottom: "auto"
+    }, // TOP
+    b: {
+        top: "auto",
+        left: "46%",
+        right: "auto",
+        bottom: "4%"
+    } // BOTTOM
+};
+
+const aPos = { // preset avatar positioning styles
+    l: {
+        top: "50%",
+        left: "5%",
+        transform: "translateY(-50%)"
+    },
+    r: {
+        top: "50%",
+        right: "5%",
+        transform: "translateY(-50%)"
+    },
+    tl: {
+        top: "5%",
+        left: "25%",
+        transform: "translateX(-50%)"
+    },
+    tr: {
+        top: "5%",
+        right: "25%",
+        transform: "translateX(50%)"
+    },
+    bl: {
+        bottom: "10%",
+        left: "25%",
+        transform: "translateX(-50%)"
+    },
+    br: {
+        bottom: "10%",
+        right: "25%",
+        transform: "translateX(50%)"
+    },
+    t: {
+        top: "5%",
+        left: "50%",
+        transform: "translateX(-50%)"
+    },
+    b: {
+        bottom: "10%",
+        left: "50%",
+        transform: "translateX(-50%)"
+    },
+};
+
 // DOM References
 let fish = document.getElementById('fish');
 let fishingLine = document.getElementById("fishing-line");
@@ -182,12 +192,6 @@ const difficultyBtns = document.querySelectorAll('#difficulty-toggle .toggle-btn
 const botToggleBtn = document.getElementById('bot-toggle');
 const botNamingToggleBtn = document.getElementById('bot-naming-toggle');
 const soundToggleBtn = document.getElementById("sound-toggle-btn");
-let menuBtn = document.getElementById('menu-btn');
-let closeMenuBtn = document.getElementById('close-menu-btn');
-let soundToggleMenuBtn = document.getElementById("toggle-sound");
-let oppInfoToggleMenuBtn = document.getElementById("toggle-opp-info");
-let matchLogsToggleMenuBtn = document.getElementById("toggle-log");
-let quitGameMenuBtn = document.getElementById("quit-game");
 let askPlayerBtn;
 
 // Screens/Containers
@@ -195,17 +199,14 @@ const startScreen = document.getElementById('start-screen');
 const rulesScreen = document.getElementById('rules-screen');
 const optionsScreen = document.getElementById('options-screen');
 let gameScreen = document.getElementById('game-screen');
-let menuSubwindow = document.getElementById('menu-subwindow');
 const botToggleContainer = document.getElementById('bot-toggle-row');
 let fishingLineContainer = document.getElementById("fishing-line-container");
-const botNamingContainer = document.getElementById('bot-naming-container');
-let cardDeckContainer;
 
 // Sliders
 const playerSlider = document.getElementById('player-slider');
 
 // Labels
-const playerCount = document.getElementById('player-count');
+const playerCountLabel = document.getElementById('player-count');
 
 // Inputs
 const playerNameInput = document.getElementById('player-name-input');
@@ -220,6 +221,7 @@ let playerVsAI = true;
 let showOpponentInfo = false;
 let logMode = false;
 let userIsAsking = false;
+let showStats = false;
 let PLAYER = 0;
 let DIFFICULTY = 1;
 let PLAYER_COUNT = 4; // default starting value
@@ -230,9 +232,11 @@ let HANDS = {};
 let SETS = {};
 let DECK = [];
 let DECK_REF = [];
-let HANDS_REF = [];
+let HANDS_REF = {};
 let PLAYERS_REF = [];
 let PLAYER_LABELS_REF = [];
+let PLAYER_TURN_INFO = {};
+let RANK_INFO = {};
 let userChosenRank;
 let userChosenPlayer;
 let infoFontStyle = 'color: blue;';
@@ -315,7 +319,7 @@ function spawnSeagrass() {
         const delay = Math.random() * 5;
 
         const height = Math.random() * 60 + 30; // 60vh to 80vh
-        const width = Math.random() * 9 + 6; // 6px to 12px
+        const width = Math.random() * 24 + 9; // 6px to 12px
 
         blade.style.left = `${left}%`;
         blade.style.height = `${height}vh`;
@@ -457,7 +461,6 @@ function startFishBlurCycle() {
         } catch (err) {
             if (err.name !== 'AbortError') {
                 throw err;
-                // Optional cleanup here
             }
         }
     })();
@@ -528,7 +531,7 @@ function startFishingLineCycle() {
     }
 
     cycle(signal);
-
+	 
     // Return controller so caller can abort when needed
     return controller;
 }
@@ -537,20 +540,16 @@ function fadedScreenSwitch(current, target) {
     // Add 'fade' class if not present
     current.classList.add('screen-fade-in');
     target.classList.add('screen-fade-in');
-
     // Fade out the current element
     current.classList.add('screen-fade-out');
 
     // After fade out completes
     setTimeout(() => {
         current.style.display = 'none';
-
         // Show the new screen and fade it in
         target.style.display = 'block';
-
         // Force reflow so opacity transition triggers
         void target.offsetWidth;
-
         target.classList.remove('screen-fade-out');
     }, 400); // Matches the CSS transition time (0.4s)
 }
@@ -594,7 +593,10 @@ function initStateBuffers(n) {
             }
         }
         SETS[i] = [];
+		  PLAYER_TURN_INFO[i] = [];
     }
+	 RANK_INFO = Object.fromEntries(RANKS.map(rank => [rank, 0]));
+	 PLAYER = Math.floor(Math.random() * n); // Set to a different player to take first turn
 }
 
 function getMostNeededCards(player = null) {
@@ -655,10 +657,9 @@ async function deleteVisualCard(playerId, indices) {
             continue;
 
         // Animate the card getting deleted
-        card.classList.add('card-remove');
-        // card.style.transition = "opacity 0.3s ease, transform 0.3s ease";
-        // card.style.opacity = 0;
-        // card.style.transform = "scale(0.3) rotate(-30deg) translateY(-50px)";
+		  card.style.transform = "";
+		  card.classList.remove("card-take");
+        card.classList.add("card-remove");
 
         // Remove from DOM after animation
         card.addEventListener("transitionend", () => {
@@ -875,7 +876,10 @@ async function handleUserTurn(sessionId) {
 const guessPlayerOrGoFish = checkSession(async function (sessionId, player, card, guess) {
     const cond = playerVsAI && PLAYER === 0;
     await showSpeechBubble(PLAYER, guess);
-    if (await takeCardFromPlayer(player, card)) {
+	 const success = await takeCardFromPlayer(player, card);
+	 RANK_INFO[card] ++;
+	 PLAYER_TURN_INFO[PLAYER][PLAYER_TURN_INFO[PLAYER].length - 1][1].push(success);
+    if (success) {
         await showSpeechBubble(player, 'Damn!');
         highlightSuccess(`${PLAYERS_REF[PLAYER].playerName} took all ${card}s from ${PLAYERS_REF[player].playerName}!`);
         updateMemories(card, player);
@@ -902,7 +906,8 @@ const play = checkSession(async function (sessionId) {
     await delay(delayMs);
     const cond = playerVsAI && PLAYER === 0;
     await checkIfEmptyHand(PLAYER);
-    if (HANDS[PLAYER] && HANDS[PLAYER].length === 0) {
+	 forgetRanks(await checkForSets());
+    if (HANDS[PLAYER] && HANDS[PLAYER].length === 0) {	// can add check for deck length...but due to the current game flow it will always be length 0 if current condition is true
         await showSpeechBubble(PLAYER, "I am just a spectator now!");
         logMessage(`${PLAYERS_REF[PLAYER].playerName} has no cards left, and the deck has ${DECK.length} card(s). Player's turn is skipped.`);
         return;
@@ -937,42 +942,14 @@ const play = checkSession(async function (sessionId) {
 
             // bots can still be 'forgetful' sometimes, so need to check both cases
             await guessPlayerOrGoFish(sessionId, playerToAsk[0], chosenCard, `${PLAYERS_REF[playerToAsk[0]].playerName}, give me your ${chosenCard}s!`);
-
-            // await showSpeechBubble(PLAYER, `${PLAYERS_REF[playerToAsk[0]].playerName}, give me your ${chosenCard}s!`);
-            // await takeCardFromPlayer(playerToAsk[0], chosenCard)
-            // await showSpeechBubble(playerToAsk[0], 'Damn!');
-            // highlightSuccess(`${PLAYERS_REF[PLAYER].playerName} took all ${chosenCard}s from ${PLAYERS_REF[playerToAsk[0]].playerName}!`);
-            // updateMemories(chosenCard, playerToAsk[0]);
-            // forgetRanks(await checkForSets());
-            // await checkIfEmptyHand(PLAYER);
-            // await showSpeechBubble(PLAYER, "My turn again!");
-            // highlightInfo(`${PLAYERS_REF[PLAYER].playerName} gets to play again`);
-            // showDetails();
-            // await play(sessionId); // recursive call for extra turn
         }
     }
 });
 
-const showWinner = checkSession(function (sessionId) {
-    if (!gameOver || gameQuitted)
-        return;
-    const mostSets = Math.max(...Object.values(SETS).map(v => v.length));
-    const winners = Object.entries(SETS)
-        .filter(([_, v]) => v.length === mostSets)
-        .map(([k]) => k);
-
-    const winNames = winners.map(id => PLAYERS_REF[id].playerName);
-    const winMsg = (winNames.length > 1 ? "The winners are " : "The winner is ") + winNames.join(' and ') + (winNames.length > 1 ? "!! It's a tie!" : "!!");
-    highlightSuccess(winMsg);
-
-    logMessage("%c\nGame results (sets made by players):", logFontStyle);
-    for (const s in SETS) {
-        logMessage(`%c${PLAYERS_REF[s].playerName}: ${SETS[s]}`, logFontStyle);
-    }
-});
-
 const gameLoop = checkSession(async function (sessionId) {
+	const turnStartTime = performance.now();
     highlightPlayerLabel(PLAYER, true);
+	 PLAYER_TURN_INFO[PLAYER].push([null, []]);
 
     await play(sessionId);
 
@@ -984,6 +961,8 @@ const gameLoop = checkSession(async function (sessionId) {
     }
     logMessage('\n');
     highlightPlayerLabel(PLAYER, false);
+	 const turnEndTime = performance.now();
+	 PLAYER_TURN_INFO[PLAYER][PLAYER_TURN_INFO[PLAYER].length - 1][0] = turnEndTime - turnStartTime;
 
     PLAYER = (PLAYER + 1) % PLAYER_COUNT;
     const allEmpty = DECK.length === 0 && Object.values(HANDS).every(hand => hand.length === 0);
@@ -1013,13 +992,14 @@ function toggleAvatarClickStyle(toggle) {
         // Enable glow-hover on all avatars except the current player
         Object.values(PLAYERS_REF).forEach(avatar => {
             if (avatar.avatarId !== PLAYER) {
-                logMessage(avatar.avatarId);
+					 avatar.style.transition = "box-shadow 0.2s ease";
                 avatar.classList.add('glow');
             }
         });
     } else {
         // Remove glow-hover once selection is made
         Object.values(PLAYERS_REF).forEach(avatar => {
+			   avatar.style.transition = "";
             avatar.classList.remove('glow');
         });
     }
@@ -1064,22 +1044,22 @@ async function onClickCard(event) {
 }
 
 async function onClickPlayer(event) {
-    if (!gameStart || !(playerVsAI && PLAYER === 0))
+    // if (!gameStart || !(playerVsAI && PLAYER === 0))
+    if (!gameStart)
         return;
 
     const clickedAvatar = event.currentTarget;
     const playerId = clickedAvatar.avatarId;
 
-    if (playerId === PLAYER)
-        return; // ignore self-click
-
-    userChosenPlayer = playerId;
-    clickedAvatar.classList.add('tilt-shake');
-    clickedAvatar.addEventListener('animationend', () => {
-        clickedAvatar.classList.remove('tilt-shake');
-    }, {
-        once: true
-    });
+	 if (!playerVsAI || (playerVsAI && playerId !== 0)) {
+		 userChosenPlayer = playerId;
+		 clickedAvatar.classList.add('tilt-shake');
+		 clickedAvatar.addEventListener('animationend', () => {
+			  clickedAvatar.classList.remove('tilt-shake');
+		 }, {
+			  once: true
+		 });
+	 }
 }
 
 function generateRandomName() {
@@ -1094,7 +1074,161 @@ function generateRandomName() {
     }
 }
 
-function renderPlayers() {
+async function generateRandomAvatar() {
+    const loadImage = src => new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.crossOrigin = "anonymous"; // Needed only for remote images
+        img.src = src;
+    });
+
+    const [faceSheet, eyesSheet, mouthSheet] = await Promise.all([
+                loadImage('./assets/avatars/sprites1.png'),
+                loadImage('./assets/avatars/sprites2.png'),
+                loadImage('./assets/avatars/sprites3.png')
+            ]);
+
+    // === FACE SPRITES ===
+    const faceCols = 10,
+    faceRows = 4;
+    const faceTileW = faceSheet.width / faceCols;
+    const faceTileH = faceSheet.height / faceRows;
+    // Allowed rows: 0 and 2 (JS zero-based, so row1=0, row3=2)
+    const faceRowOptions = [0, 2];
+    // Cells to exclude: (1,1), (2,1), (3,3), (4,3), (3,9), (3,10), (4,9), (4,10)
+    // zero-based indexing for cols and rows:
+    // (0,0), (1,0), (2,2), (3,2), (2,8), (2,9), (3,8), (3,9)
+    // Build allowed cells array for face
+    const faceAllowedCells = [];
+    for (let r of faceRowOptions) {
+        for (let c = 0; c < faceCols; c++) {
+            if (
+                !(
+                    (r === 0 && (c === 0)) || // (1,1)
+                    (r === 1 && (c === 0)) || // (2,1) but row 1 isn't in row options, ignore
+                    (r === 2 && (c === 2 || c === 8 || c === 9)) || // (3,3), (3,9), (3,10)
+                    (r === 3 && (c === 2 || c === 8 || c === 9)) // (4,3), (4,9), (4,10) but row 3 not in options
+                )) {
+                faceAllowedCells.push({
+                    row: r,
+                    col: c
+                });
+            }
+        }
+    }
+
+    // Pick random face cell
+    const {
+        row: faceRow,
+        col: faceCol
+    } = choice(faceAllowedCells);
+
+    // === EYES SPRITES ===
+    const eyesCols = 10,
+    eyesRows = 8;
+    const eyesTileW = eyesSheet.width / eyesCols;
+    const eyesTileH = eyesSheet.height / eyesRows;
+    // Allowed rows: 0, 2, 4, 6 (zero-based: 0,2,4,6)
+    const eyesRowOptions = [0, 2, 4, 6];
+    // Exclude all cols 1 to 9 on row 6 (row 7 in 1-based)
+    // zero-based row 6: exclude cols 1..9
+    const eyesAllowedCells = [];
+    for (let r of eyesRowOptions) {
+        for (let c = 0; c < eyesCols; c++) {
+            if (!(r === 6 && c >= 1 && c <= 9)) {
+                eyesAllowedCells.push({
+                    row: r,
+                    col: c
+                });
+            }
+        }
+    }
+
+    // Pick random eyes cell
+    const {
+        row: eyesRow,
+        col: eyesCol
+    } = choice(eyesAllowedCells);
+
+    // === MOUTH SPRITES ===
+    const mouthCols = 10,
+    mouthRows = 6;
+    const mouthTileW = mouthSheet.width / mouthCols;
+    const mouthTileH = mouthSheet.height / mouthRows;
+    // Allowed rows: 0, 2, 4 (zero-based 0,2,4)
+    const mouthRowOptions = [0, 2, 4];
+    // Exclude cols 4 to 9 on row 4 (row 5 in 1-based)
+    const mouthAllowedCells = [];
+    for (let r of mouthRowOptions) {
+        for (let c = 0; c < mouthCols; c++) {
+            if (!(r === 4 && c >= 4 && c <= 9)) {
+                mouthAllowedCells.push({
+                    row: r,
+                    col: c
+                });
+            }
+        }
+    }
+
+    // Pick random mouth cell
+    const {
+        row: mouthRow,
+        col: mouthCol
+    } = choice(mouthAllowedCells);
+
+    // === CANVAS SETUP ===
+    const targetSize = 120; // Output size
+    const scale = targetSize / faceTileW;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = targetSize;
+    canvas.height = targetSize;
+    const ctx = canvas.getContext("2d");
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // === DRAW FACE ===
+    ctx.drawImage(
+        faceSheet,
+        faceCol * faceTileW, faceRow * faceTileH, // Source X, Y
+        faceTileW, faceTileH, // Source W, H
+        0, 0, // Dest X, Y
+        faceTileW * scale, faceTileH * scale // Dest W, H
+    );
+
+    // === DRAW EYES ===
+    const eyesOffsetX = (targetSize - eyesTileW * scale) / 2;
+    const eyesOffsetY = 0; // align with top
+    ctx.drawImage(
+        eyesSheet,
+        eyesCol * eyesTileW, eyesRow * eyesTileH,
+        eyesTileW, eyesTileH,
+        eyesOffsetX, eyesOffsetY,
+        eyesTileW * scale, eyesTileH * scale);
+
+    // === DRAW MOUTH ===
+    // Mouth horizontal center (same as before)
+    const mouthOffsetX = (targetSize - mouthTileW * scale) / 2;
+    // Mouth vertical position - let's place it roughly around 65% height of the face
+    const mouthOffsetY = targetSize * 0.7 - (mouthTileH * scale) / 2;
+    ctx.drawImage(
+        mouthSheet,
+        mouthCol * mouthTileW, mouthRow * mouthTileH,
+        mouthTileW, mouthTileH,
+        mouthOffsetX, mouthOffsetY,
+        mouthTileW * scale, mouthTileH * scale);
+
+    // === CONVERT TO <img> ===
+    const finalImg = new Image();
+    finalImg.src = canvas.toDataURL("image/png");
+    finalImg.width = targetSize;
+    finalImg.height = targetSize;
+    return finalImg;
+}
+
+
+async function renderPlayers() {
     const positions = [];
     const namePositions = [];
 
@@ -1168,13 +1302,6 @@ function renderPlayers() {
 
         // Set size and appearance
         Object.assign(userArea.style, userStyle);
-        // Object.assign(userArea.style, {
-        // position: "absolute",
-        // width: "600px",
-        // height: "200px",
-        // zIndex: 900,
-        // ...userStyle
-        // });
 
         // Assign ID and Name
         const playerName = playerNameInput.value.trim();
@@ -1193,14 +1320,16 @@ function renderPlayers() {
 
     // === CREATE NPC PLAYER ELEMENTS ===
     for (let i = 0; i < positions.length; i++) {
-        const avatarImg = document.createElement("img");
+        const avatarImg = document.createElement("div");
         avatarImg.classList.add("player-avatar");
 
         // Pick a random avatar
-        const avatarNumber = Math.floor(Math.random() * 20) + 1; // 1 to 20
-        const avatar = `./assets/avatars/av${avatarNumber}.png`;
-        avatarImg.src = avatar;
+        // const avatarNumber = Math.floor(Math.random() * 20) + 1; // 1 to 20
+        // const avatar = `./assets/avatars/av${avatarNumber}.png`;
+		  // avatarImg.src = avatar.src;
+		  const avatar = await generateRandomAvatar();
         avatarImg.alt = `Player ${i}`;
+		  avatarImg.appendChild(avatar);
 
         // Assign ID and Name
         const id = playerVsAI ? i + 1 : i;
@@ -1210,12 +1339,10 @@ function renderPlayers() {
         avatarImg.playerName = playerName; // JS-side custom property
 
         // Apply positioning
-        const {
-            transform,
-            ...rest
-        } = positions[i]; // Destructure to separate transform
-        Object.assign(avatarImg.style, rest); // Apply all other styles
-        avatarImg.style.setProperty('--base-transform', transform);
+		  // Generate a unique class name for this player
+			const aPosStyle = `avatar-position-${id}`;
+			addStyleClass(aPosStyle, positions[i])
+			avatarImg.classList.add(aPosStyle);
 
         // Generate a random color
         const hue = Math.floor(Math.random() * 360);
@@ -1237,7 +1364,9 @@ function renderPlayers() {
         nameLabel.textContent = playerName;
 
         // Apply the specific label positioning (only up to 6 positions)
-        Object.assign(nameLabel.style, namePositions[i] || {});
+		   const nPosStyle = `name-position-${id}`;
+			addStyleClass(nPosStyle, namePositions[i])
+			nameLabel.classList.add(nPosStyle);
 
         playerContainer.appendChild(nameLabel);
         PLAYER_LABELS_REF.push(nameLabel);
@@ -1246,30 +1375,49 @@ function renderPlayers() {
     gameScreen.appendChild(playerContainer);
 }
 
-// for debugging
+function addStyleClass(name, mapping) {
+	const styleId = "runtime-styles";
+	let styleTag = document.getElementById(styleId);
+
+	// Create the <style> tag only if it doesn't exist
+	if (!styleTag) {
+		styleTag = document.createElement("style");
+		styleTag.id = styleId;
+		document.head.appendChild(styleTag);
+	}
+
+	// Optional: prevent duplicate class definition
+	if (styleTag.textContent.includes(`.${name} {`)) {
+		console.warn(`Style class .${name} already exists.`);
+		return;
+	}
+
+	// Build the rule
+	const rule = `.${name} { ${Object.entries(mapping).map(([k, v]) => `${k}: ${v};`).join(' ')} }\n`;
+
+	styleTag.textContent += rule;
+}
+
+
+// only used for debugging
 function reorderAlternating(arr) {
     const CHAR_ORDER = ['A', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'J', 'K', 'Q'];
-
     // Step 1: Create 13 sublists based on first character
     const sub = Array(13).fill(null).map(() => []);
-
     for (const str of arr) {
         const idx = CHAR_ORDER.indexOf(str[0]);
         if (idx === -1)
             throw new Error(`Unexpected starting char in string: ${str}`);
         sub[idx].push(str);
     }
-
     // Sanity check: each sublist should have exactly 4 elements
     for (let s of sub) {
         if (s.length !== 4) {
             throw new Error(`A group has length != 4: ${JSON.stringify(s)}`);
         }
     }
-
     // Step 2: Rebuild `arr` following the described pattern
     let k = 0;
-
     for (let i = 0; i < 7; i++) {
         if (i < 6) {
             // Interleave two groups: sub[2*i] and sub[2*i + 1]
@@ -1286,9 +1434,31 @@ function reorderAlternating(arr) {
     }
 }
 
-function renderCardDeck() {
-    cardDeckContainer = document.createElement("div");
-    cardDeckContainer.id = "card-deck-container";
+async function renderCardDeck() {
+	function getKeyframe(anm, rotation, burstX = 0, burstY = 0) {
+		if (anm == 0) {
+			return [
+			  { opacity: 0, transform: `translateY(-200px) scaleY(4) rotate(${rotation}deg)` },
+			  { opacity: 1, transform: `translateY(50px) scaleY(0.8) rotate(${rotation}deg)` },
+			  { opacity: 1, transform: `translateY(0px) scaleY(1) rotate(${rotation}deg)` }
+			]
+		} else {
+			return [
+			  { opacity: 0, transform: `translate(${burstX}px, ${burstY}px) scale(4) rotate(${rotation - 90}deg)` },
+			  { opacity: 1, transform: `translate(0, 0) scale(1) rotate(${rotation}deg)` }
+			]
+		}
+	}
+	
+	
+   let cardDeckContainer = document.getElementById("card-deck-container");
+	if (!cardDeckContainer) {
+		 cardDeckContainer = document.createElement("div");
+	 }
+	 cardDeckContainer.id = "card-deck-container";
+	 if (!gameScreen.contains(cardDeckContainer)) {
+		 gameScreen.appendChild(cardDeckContainer);
+	 }
 
     // Choose a card back design randomly or set one explicitly
     cardBackDesignSrc = `./assets/cards/designs/back${Math.floor(Math.random() * 4) + 1}.png`;
@@ -1300,35 +1470,65 @@ function renderCardDeck() {
         }
     }
 
-    shuffle(DECK); // shuffles DECK in-place
+    // shuffle(DECK); // shuffles DECK in-place
+	 reorderAlternating(DECK);	// used for testing checkForSet animations, use when PLAYER_COUNT=4
+	 
+	 chosenAnimation = Math.round(Math.random());
 
-    for (let i = 0; i < 52; i++) {
+    for (let i = 0; i < RANKS.length * SUITS.length; i++) {
         const card = document.createElement("img");
         card.src = cardBackDesignSrc;
         card.cardValue = DECK[i]; // Assign each deck card its corresponding actual value in DECK
         card.classList.add("card-back");
+		  
+		  
+		  const range = Math.floor(Math.random() * (16 - 2 + 1)) + 2;
+		  const rotation = (Math.random() * range - range / 2);
 
-        // Slight random rotation
-        const range = Math.floor(Math.random() * (16 - 2 + 1)) + 2; // Random degree between (+-)2 and (+-)16
-        const rotation = (Math.random() * range - range / 2).toFixed(2);
-
-        // Slight z-index offset so cards stack without full overlap
-        card.style.transform = `rotate(${rotation}deg)`;
-        card.style.zIndex = i;
-
-        DECK_REF.push(card); // Store card in global deck array
-        cardDeckContainer.appendChild(card);
-    }
-
-    gameScreen.appendChild(cardDeckContainer);
+		  card.style.zIndex = i;
+		  DECK_REF.push(card);
+		  cardDeckContainer.appendChild(card);
+		  
+			const burstX = Math.random() * 500 - 250;	// tweak here for interesting animation behaviour
+			const burstY = Math.random() * 500 - 250; // may or may not be used depending on chosenAnimation
+			
+			card.animate(getKeyframe(chosenAnimation, rotation, burstX, burstY), {
+			  duration: 400,
+			  easing: 'ease-out',
+			  delay: i * 20,
+			}).finished.then(() => {	// When animation ends, ensure final transform is applied, but animation discarded
+			  card.style.transform = `rotate(${rotation}deg)`; // final rotation
+			  card.style.opacity = ''; // reset to base opacity style
+			});
+	 }
 }
 
-// Utility to wait for a CSS transition to end
+// Utility to wait for the first CSS transition to end on an element
 function waitForTransitionEnd(element) {
     return new Promise(resolve => {
         element.addEventListener("transitionend", resolve, {
             once: true
         });
+    });
+}
+
+// Utility to wait for all CSS transition to end on an element
+function waitForAllTransitionsEnd(element) {
+    return new Promise(resolve => {
+        const computedStyle = getComputedStyle(element);
+        const properties = computedStyle.transitionProperty.split(',').map(p => p.trim());
+        let remaining = properties.length;
+        const onEnd = (e) => {
+            // Only track events for this element (not children)
+            if (e.target !== element) return;
+            remaining--;
+            if (remaining <= 0) {
+                element.removeEventListener("transitionend", onEnd);
+                resolve();
+            }
+        };
+
+        element.addEventListener("transitionend", onEnd);
     });
 }
 
@@ -1400,8 +1600,6 @@ function showFloatingText(playerId, text, type = "gain") {
     // Animate with delay before removing
     setTimeout(() => {
         textEl.classList.add("remove");
-        // textEl.style.opacity = "0";
-        // textEl.style.transform = "translate(-50%, -60px)";
     }, 10); // slight delay to ensure CSS transition applies
 
     setTimeout(() => {
@@ -1485,7 +1683,7 @@ async function flipCardToFace(card, cvalue) {
 
     // Start half-flip
     card.style.transform += " rotateY(90deg)";
-    await delay(300); // Wait for half the flip
+    await delay(300); // Wait for halfway through flip
 
     // Determine which image to show
     if (typeof cvalue === "string") {
@@ -1523,12 +1721,12 @@ const dealInitialHands = checkSession(async function (sessionId, cardCount = 5) 
     const totalPlayers = PLAYER_COUNT;
     for (let currentCard = 0; currentCard < cardCount; currentCard++) {
         for (let currentPlayer = 0; currentPlayer < totalPlayers; currentPlayer++) {
-            dealCardFromDeck(currentPlayer);
+            dealCardFromDeck(currentPlayer);		// toggle await here, to deal cards instantly or one by one
         }
     }
-
-    // Final delay for the last card animation to finish (plus small buffer)
-    await delay(550);
+	 
+    // Final delay for the last card animation to finish
+    await delay(550);		// check if needed?
 });
 
 async function takeCardFromDeck(playerId) {
@@ -1549,18 +1747,13 @@ async function takeCardFromDeck(playerId) {
     gameScreen.appendChild(card);
 
     // Set absolute positioning
-    const startLeft = cardRect.left - gameRect.left;
-    const startTop = cardRect.top - gameRect.top;
+	 const startLeft = cardRect.left;
+    const startTop = cardRect.top;
 
     card.style.left = `${startLeft}px`;
     card.style.top = `${startTop}px`;
-    card.style.width = `${cardRect.width}px`;
-    card.style.height = `${cardRect.height}px`;
     card.style.willChange = "transform, top, left, width, height";
     card.classList.add("card-take");
-    // card.style.position = "absolute";
-    // card.style.zIndex = 1000;
-    // card.style.transition = "transform 0.5s ease, left 0.5s ease, top 0.5s ease, width 0.5s ease, height 0.5s ease";
 
     // Compute target position
     const avatarRect = avatar.getBoundingClientRect();
@@ -1573,18 +1766,15 @@ async function takeCardFromDeck(playerId) {
         card.style.top = `${targetY}px`;
         // Apply different sizes for human player
         if (playerVsAI && playerId === 0) {
-            card.classList.add("user");
-            // card.style.width = `128px`;
-            // card.style.height = `180px`;
+            card.classList.add("user-card");
         } else {
-            card.classList.add("bot");
-            // card.style.width = `32px`;
-            // card.style.height = `45px`;
+            card.classList.add("bot-card");
         }
     });
 
     // Wait for animation to finish
-    await delay(250);
+    // await delay(250);
+	 await waitForTransitionEnd(card);	// also nice and clean
 
     // Update player's hand
     if (!HANDS_REF[playerId]) {
@@ -1673,92 +1863,49 @@ async function animateTakingCardFromPlayer(player, rank) {
         gameScreen.appendChild(card);
         card.style.left = `${startLeft}px`;
         card.style.top = `${startTop}px`;
-        card.style.width = `${cardRect.width}px`;
-        card.style.height = `${cardRect.height}px`;
         card.classList.add("card-take");
-        // card.style.position = "absolute";
-        // card.style.zIndex = 1000;
-        // card.style.transition = "transform 0.5s ease, left 0.5s ease, top 0.5s ease, width 0.5s ease, height 0.5s ease";
 
         // Determine target:
-        let targetX,
-        targetY,
-        finalWidth,
-        finalHeight;
+        let dimStyle, dimStyleToRemove;
         if (playerVsAI && PLAYER === 0) {
-            // Player takes from NPC (already works)
+            // Player takes from NPC
+				dimStyle = "user-card";
+				dimStyleToRemove = "bot-card";
             const area = document.getElementById("user-play-area");
             const areaRect = area.getBoundingClientRect();
             targetX = areaRect.left - gameRect.left + areaRect.width / 2 - 64;
             targetY = areaRect.top - gameRect.top + areaRect.height / 2 - 90;
-            finalWidth = 128;
-            finalHeight = 180;
         } else {
-            // NPC takes from player (new case)
+            // NPC takes from player/bot
+				dimStyle = "bot-card";
+				dimStyleToRemove = "user-card";
             const avatar = PLAYERS_REF[PLAYER];
             const avatarRect = avatar.getBoundingClientRect();
             targetX = avatarRect.left - gameRect.left + 50;
             targetY = avatarRect.top - gameRect.top + 120;
-            finalWidth = 32;
-            finalHeight = 45;
         }
 
         requestAnimationFrame(() => {
             card.style.left = `${targetX}px`;
             card.style.top = `${targetY}px`;
-            card.style.width = `${finalWidth}px`;
-            card.style.height = `${finalHeight}px`;
+				card.classList.remove(dimStyleToRemove);
+				card.classList.add(dimStyle);
         });
 
-        await delay(500);
+        // await delay(500);
+		  await waitForTransitionEnd(card);	// also nice and clean
 
         // Collect card into receiver hand
         receiverHand.push(cardValue);
         receiverHandRef.push(card);
-        // card.style.willChange = "";
 
-        positionPlayerHand(PLAYER); // Refan cards of current player/receiver
+        positionPlayerHand(PLAYER); // Refan cards of receiver
+		  await waitForTransitionEnd(card);
 
         // Flip logic
         if (playerVsAI) {
-            if (PLAYER === 0) {
-                // 🂠 Player takes card from NPC: Flip to show front
-                await new Promise(res => {
-                    const onEnd = (e) => {
-                        if ((e.propertyName === "left" || e.propertyName === "top") && e.target === card) {
-                            card.removeEventListener("transitionend", onEnd);
-                            res();
-                        }
-                    };
-                    card.addEventListener("transitionend", onEnd);
-                });
-
-                card.style.transition = "transform 0.3s";
-                flipCardToFace(card, cardValue);
-                // card.style.transform += " rotateY(90deg)";
-                // await delay(300);
-                // card.src = `./assets/cards/deck/${cardValue}.png`;
-                // card.style.transform = card.style.transform.replace("rotateY(90deg)", "rotateY(0deg)");
-
-            } else if (player === 0) {
-                // 🂠 NPC takes card from player: Flip to show back
-                await new Promise(res => {
-                    const onEnd = (e) => {
-                        if ((e.propertyName === "left" || e.propertyName === "top") && e.target === card) {
-                            card.removeEventListener("transitionend", onEnd);
-                            res();
-                        }
-                    };
-                    card.addEventListener("transitionend", onEnd);
-                });
-
-                card.style.transition = "transform 0.3s";
-                flipCardToFace(card);
-                // card.style.transform += " rotateY(90deg)";
-                // await delay(300);
-                // card.src = cardBackDesignSrc; // Your card back image path
-                // card.style.transform = card.style.transform.replace("rotateY(90deg)", "rotateY(0deg)");
-            }
+            if (PLAYER === 0) flipCardToFace(card, cardValue);	// 🂠 Player takes card from NPC: Flip to show front
+            else if (player === 0) flipCardToFace(card);	// 🂠 NPC takes card from player: Flip to show back
         }
     }
 
@@ -1775,6 +1922,151 @@ function waitUntilToggled(flagFn, interval = 1000) {
             }
         }, interval);
     });
+}
+
+function resetStateVariables(coldReset = false) {
+	 function clearDOMElementRef(ref) {
+		 if (Array.isArray(ref)) {
+			  for (const el of ref) {
+					el?.remove();
+			  }
+			  ref.length = 0;
+		 } else if (typeof ref === 'object' && ref !== null) {
+			  for (const key in ref) {
+					if (Array.isArray(ref[key])) {
+						 for (const el of ref[key]) {
+							  el?.remove();
+						 }
+						 delete ref[key]; // remove key-value pair from dict
+					}
+			  }
+		 }
+	 }
+	
+	 // Clearing game counters/trackers/flags
+    gameStart = false;
+    gameOver = true;
+    gamePaused = false;
+    gameQuitted = true;
+    userIsAsking = false;
+	 showStats = false;
+	 MEMORIES = {};
+	 HANDS = {};
+	 SETS = {};
+	 MEMORIES = {};
+	 RANK_INFO = {};
+	 PLAYER_TURN_INFO = {};
+    // Object.keys(MEMORIES).forEach(key => delete MEMORIES[key]);
+    // Object.keys(HANDS).forEach(key => delete HANDS[key]);
+    // Object.keys(SETS).forEach(key => delete SETS[key]);
+	 if (!coldReset) {
+		 clearDOMElementRef(PLAYER_LABELS_REF);
+		 clearDOMElementRef(PLAYERS_REF);
+	 }
+	 clearDOMElementRef(HANDS_REF);
+	 clearDOMElementRef(DECK_REF);
+    DECK.length = 0;
+}
+
+function restartBubbles() {
+	// Stop bubbles if any
+    if (bubbleIntervalId) {
+        clearInterval(bubbleIntervalId);
+        bubbleIntervalId = null;
+    }
+    // Restart bubbles
+    bubbleIntervalId = setInterval(spawnBubble, 500);
+}
+
+function restartFishingLine() {
+	// 🧹 Clean up any existing fishing line/hook
+    const existingLineContainer = document.getElementById("fishing-line-container");
+    if (existingLineContainer) {
+        existingLineContainer.remove();
+    }
+    // Respawn fishing line and hook
+    fishingLineContainer = document.createElement("div");
+    fishingLineContainer.id = "fishing-line-container";
+    fishingLine = document.createElement("div");
+    fishingLine.id = "fishing-line";
+    fishingHook = document.createElement("div");
+    fishingHook.id = "fishing-hook";
+    fishingLine.appendChild(fishingHook);
+    fishingLineContainer.appendChild(fishingLine);
+    document.body.appendChild(fishingLineContainer);
+    // Restart fishing line cycle
+    fishingCycleController = startFishingLineCycle();
+}
+
+async function restartFish() {
+	// Respawn fish
+    const existingFish = document.getElementById("fish");
+    if (existingFish) {
+        existingFish.remove();
+    }
+    const fishNumber = Math.floor(Math.random() * 15) + 1;
+    fish = document.createElement("div");
+    fish.id = "fish";
+    fish.style.background = `url('./assets/fish/fish${fishNumber}.png') no-repeat center/contain`;
+    // Custom sizes for specific fishes
+    switch (fishNumber) {
+    case 8:
+        fishWidth = 272;
+        fishHeight = 162;
+        break;
+    case 9:
+        fishWidth = 600;
+        fishHeight = 201;
+        break;
+    case 10:
+        fishWidth = 727;
+        fishHeight = 220;
+        break;
+    case 12:
+        fishWidth = 400;
+        fishHeight = 400;
+        break;
+    case 13:
+        fishWidth = 848;
+        fishHeight = 423;
+        break;
+    default:
+        fishWidth = 360;
+        fishHeight = 180;
+        break;
+    }
+    fish.style.width = `${fishWidth}px`;
+    fish.style.height = `${fishHeight}px`;
+    document.body.appendChild(fish);
+    // 🔁 Re-apply its functionality
+    updateVelocity(); // Give it an initial movement vector
+    velocityIntervalId = setInterval(updateVelocity, 2500); // Change direction periodically
+    animateFish(); // Start animation loop
+    await delay(8000);
+    if (fishCycleController) {
+        fishCycleController.abort(); // still safe to do if its aborted
+    }
+    fishCycleController = startFishBlurCycle(); // Resume blur/zoom cycle
+}
+
+async function clearGameScreen() {
+    // Fade out game screen
+    gameScreen.style.opacity = 0;
+	 await delay(200);
+	 // After transition, hide game-screen and show splash
+	 gameScreen.classList.remove("active");
+    gameScreen.remove();
+    startScreen.style.display = "block";
+    startScreen.style.opacity = 1;
+    // Remove references created in game-screen
+    askPlayerBtn = null;
+	 const stylesEl = document.getElementById("runtime-styles");
+	 if (stylesEl) stylesEl.textContent = '';
+	 
+	 resetStateVariables();
+	 restartBubbles();
+    restartFishingLine();
+    await restartFish();
 }
 
 function createSets() {
@@ -1803,57 +2095,391 @@ function createSets() {
     }
 }
 
-async function setupGameScreen() {
-    currentGameSessionId++; // 🔄 Invalidate any pending operations from older games
-    // Create game screen from template
-    gameScreen = document.createElement("div");
-    gameScreen.id = "game-screen";
-    gameScreen.style.display = "none";
-    gameScreen.innerHTML = `
-     <button id="menu-btn" class="glow-btn icon transparent">☰</button>
-     <div id="menu-subwindow" class= "translucent-light" style="display: none;">
-       <button id="close-menu-btn" class="glow-btn icon-small transparent">✖</button>
-       <div class="menu-content">
-         <button class="glow-btn menu-option" id="toggle-sound">Sounds: ${soundFx ? "On" : "Off"}</button>
-         <button class="glow-btn menu-option" id="toggle-opp-info">Show All Cards: ${showOpponentInfo ? "Yes" : "No"}</button>
-			<button class="glow-btn menu-option" id="toggle-log">Allow Logging: ${logMode ? "Yes" : "No"}</button>
-         <button class="glow-btn menu-option" id="quit-game">Quit Game</button>
-       </div>
-     </div>
-   `;
+async function handleLeaveAfterGameOver() {
+	// Hide winner popup
+	const winnerSubwindow = document.getElementById("winner-popup");
+   winnerSubwindow.style.opacity = '';
+   await delay(200);
+   winnerSubwindow.classList.remove("active");
+   clearGameScreen();
+}
 
-    renderPlayers();
-    renderCardDeck();
+function getTotalGameDuration() {
+    let total = 0;
+    for (const playerId in PLAYER_TURN_INFO) {
+        for (const [duration,] of PLAYER_TURN_INFO[playerId]) {
+            if (typeof duration === 'number') {
+                total += duration;
+            }
+        }
+    }
 
-    document.body.appendChild(gameScreen);
-    // Add event listeners
-    menuBtn = document.getElementById("menu-btn");
-    menuSubwindow = document.getElementById("menu-subwindow");
-    closeMenuBtn = document.getElementById("close-menu-btn");
-    soundToggleMenuBtn = document.getElementById("toggle-sound");
-    oppInfoToggleMenuBtn = document.getElementById("toggle-opp-info");
-    matchLogsToggleMenuBtn = document.getElementById("toggle-log");
-    quitGameMenuBtn = document.getElementById("quit-game");
+    return total;
+}
 
-    await delay(1000); // wait one second before showing start button
+function getTotalGameTurns() {
+	let count = 0;
+	for (const player in PLAYER_TURN_INFO) {
+	  count += PLAYER_TURN_INFO[player].length;
+	}
+	return count;
+}
 
-    const startGameBtn = document.createElement("div");
+function generateGameStatistics() {
+	const statsContainer = document.getElementById("winner-stats");
+	if (!statsContainer) return;
+
+	// Avoid regenerating
+	if (statsContainer.dataset.generated === "true") return;
+	statsContainer.dataset.generated = "true";
+
+	statsContainer.innerHTML = ""; // Reset
+
+	const createSection = (title, contentHTML) => {
+		const section = document.createElement("div");
+		section.className = "stat-section";
+		section.innerHTML = `<div class="stat-heading">${title}</div><div class="stat-body">${contentHTML}</div>`;
+		return section;
+	};
+
+	// Sets Collected
+	const setsHTML = Object.entries(SETS)
+		.map(([playerId, setRanks]) => {
+			const name = PLAYERS_REF[playerId]?.playerName || playerId;
+			return `<div class="player-row"><strong>${name}:</strong> ${setRanks.join(", ")}</div>`;
+		}).join("");
+
+	// Match Info
+	const duration = getTotalGameDuration();
+	const turns = getTotalGameTurns();
+	const matchInfoHTML = `
+		<div class="player-row"><strong>\u{1F570} Duration:</strong> ${duration}</div>
+		<div class="player-row"><strong>Total Turns:</strong> ${turns}</div>
+		<div class="player-row"><strong>\u{23F3} Avg Turn Time:</strong> ${duration/turns}</div>
+	`;
+	
+	let maxFishedId, maxFished = 0;
+	const luckTable = Object.fromEntries(Array.from({ length: PLAYER_COUNT }, (_, i) => [i, 0]));
+
+	// Turns Taken
+	const turnsTakenHTML = Object.entries(PLAYER_TURN_INFO)
+		.map(([playerId, turnInfo]) => {
+			const name = PLAYERS_REF[playerId]?.playerName || playerId;
+			return `<div class="player-row"><strong>${name}:</strong> ${turnInfo.length}</div>`;
+		}).join("");
+
+	// ✅ Successful
+	const successfulHTML = Object.entries(PLAYER_TURN_INFO)
+		.map(([playerId, turnInfo]) => {
+			const name = PLAYERS_REF[playerId]?.playerName || playerId;
+			const count = turnInfo.reduce((sum, [_, bools]) => {
+			    return sum + bools.filter(Boolean).length;
+			}, 0);
+			luckTable[playerId] = SETS[playerId].length/count;
+			return `<div class="player-row"><strong>${name}:</strong> ${count}</div>`;
+		}).join("");
+
+	// ❌ Unsuccessful
+	const unsuccessfulHTML = Object.entries(PLAYER_TURN_INFO)
+		.map(([playerId, turnInfo]) => {
+			const name = PLAYERS_REF[playerId]?.playerName || playerId;
+			const count = turnInfo.reduce((sum, [_, bools]) => {
+			    return sum + bools.filter(val => val === false).length;
+			}, 0);
+			if (count > maxFished) {
+				maxFished = count;
+				maxFishedId = playerId;
+			}
+			return `<div class="player-row"><strong>${name}:</strong> ${count}</div>`;
+		}).join("");
+
+	// Rank Stats
+	const mostRequested = Object.entries(RANK_INFO).reduce((a, b) => {
+	    return b[1] > a[1] ? b : a;
+	})[0];
+	const leastRequested = Object.entries(RANK_INFO).reduce((a, b) => {
+	    return b[1] < a[1] ? b : a;
+	})[0];
+	const rankStatsHTML = `
+		<div class="player-row"><strong>\u{1F50A} Most Requested:</strong> ${mostRequested}</div>
+		<div class="player-row"><strong>\u{1F508} Least Requested:</strong> ${leastRequested}</div>
+	`;
+	
+	const maxLuckId = Object.entries(luckTable).reduce((maxVal, currentVal) => {
+	    return currentVal[1] > maxVal[1] ? currentVal : maxVal;
+	})[0];
+	// Lucky Angler (Luckiest Player)
+	const fortuneFisherHTML = `
+		<div class="special-title">\u{1F340} Lucky Angler</div>
+		<div class="special-name">${PLAYERS_REF[maxLuckId]?.playerName || maxLuckId}</div>
+	`;
+	
+	// Deck Diver (Most Fished)
+	const deckDiverHTML = `
+		<div class="special-title">\u{1F93F} Deck Diver</div>
+		<div class="special-name">${PLAYERS_REF[maxFishedId]?.playerName || maxFishedId}</div>
+	`;
+
+	// Append all blocks to the stats container
+	statsContainer.appendChild(createSection("\u{1F4DA} Sets Made", setsHTML));
+	statsContainer.appendChild(createSection("\u{1F579} Match Info", matchInfoHTML));	//🕹
+	statsContainer.appendChild(createSection("\u{1F501} Turns Taken", turnsTakenHTML));
+	
+	// Special solo sections
+	const fortuneSection = document.createElement("div");
+	fortuneSection.className = "stat-section";
+	fortuneSection.innerHTML = fortuneFisherHTML;
+	statsContainer.appendChild(fortuneSection);
+
+	const diverSection = document.createElement("div");
+	diverSection.className = "stat-section";
+	diverSection.innerHTML = deckDiverHTML;
+	statsContainer.appendChild(diverSection);
+	
+	statsContainer.appendChild(createSection("\u{1F3AF} Catch Count", successfulHTML));
+	statsContainer.appendChild(createSection("\u{1F3A3} Fishing Count", unsuccessfulHTML));
+	statsContainer.appendChild(createSection("\u{1F522} Rank Stats", rankStatsHTML));
+}
+
+function handleShowGameStats() {
+	showStats = !showStats;
+	const podium = document.getElementById("winner-podium");
+	const stats = document.getElementById("winner-stats");
+
+	if (showStats) {
+		generateGameStatistics(); // Compute and render once
+		podium.style.display = "none";
+		stats.style.display = "";
+	} else {
+		stats.style.display = "none";
+		podium.style.display = "";
+	}
+}
+
+const showWinner = checkSession(async function (sessionId) {
+    const winnerSubwindow = document.getElementById("winner-popup");
+    winnerSubwindow.style.display = "";
+    await delay(100); // to let display transition finish
+    winnerSubwindow.style.opacity = 1;
+	 
+    podiumContainer = document.getElementById("winner-podium");
+    returnToTitleScreenBtn = document.getElementById("return-to-title");
+    restartGameBtn = document.getElementById("restart-game");
+    showGameStatsBtn = document.getElementById("show-stats");
+
+    // 4. Podium ranks and positions
+    const podiumRanks = [{ rank: 2, index: 1 }, // left
+								{ rank: 1, index: 0 }, // center
+								{ rank: 3, index: 2 } // right
+								];
+
+    const selectedWinners = [];
+	 const sortedPlayers = Object.entries(SETS).sort((a, b) => b[1].length - a[1].length);
+
+    for (const {
+        rank,
+        index
+    }
+        of podiumRanks) {
+        if ((rank === 2 && PLAYER_COUNT <= 3) || (rank === 3 && PLAYER_COUNT <= 4))
+            continue;
+        const playerId = sortedPlayers[index]?.[0];
+        if (!playerId)
+            continue;
+        const rankStyle = rank === 1 ? "first" : (rank === 2 ? "second" : "third");
+        // Handle user (playerId === 0) separately if in playerVsAI mode
+        if (playerVsAI && playerId === "0") {
+            // Create a wrapper just like for bots
+            const wrapper = document.createElement("div");
+            wrapper.id = "winner-wrapper";
+            wrapper.classList.add("winner-user-wrapper");
+
+            // Create the Lottie animation element (will be discarded on closing winner-popup)
+            const lottie = document.createElement("dotlottie-wc");
+				const chosenUrl = LOTTIE_URLS[Math.floor(Math.random() * LOTTIE_URLS.length)];
+            lottie.setAttribute("src", chosenUrl);
+            lottie.setAttribute("speed", "1");
+            lottie.setAttribute("mode", "forward");
+            lottie.setAttribute("loop", "");
+            lottie.setAttribute("autoplay", "");
+
+            // Set consistent style as avatars
+            lottie.classList.add("winner-avatar", rankStyle);
+            lottie.style.opacity = "0"; // Start hidden for fade-in sync
+
+            // Delay to match other avatars animation timing
+            setTimeout(() => {
+                lottie.style.opacity = "1";
+                lottie.style.transition = "opacity 0.6s ease-in";
+            }, 150); // Adjust to sync visually with others
+
+            // Add user name label (discard on closing winner-popup)
+            const userLabel = document.createElement("div");
+            userLabel.textContent = PLAYERS_REF[playerId].playerName;
+            userLabel.classList.add("winner-label", rankStyle);
+
+            // Append to wrapper
+            wrapper.appendChild(lottie);
+            wrapper.appendChild(userLabel);
+            podiumContainer.appendChild(wrapper);
+        } else {
+			  const avatar = PLAYERS_REF[playerId];
+			  const label = PLAYER_LABELS_REF[playerId];
+
+			  const avatarRect = avatar.getBoundingClientRect();
+			  const labelRect = label.getBoundingClientRect();
+			  
+			  const avatarPosStyles = Array.from(avatar.classList).filter(cls => cls.startsWith("avatar-position"));
+			  const labelPosStyles = Array.from(label.classList).filter(cls => cls.startsWith("name-position"));
+			  avatarPosStyles.forEach(cls => avatar.classList.remove(cls));
+			  labelPosStyles.forEach(cls => label.classList.remove(cls));
+
+			  ["top", "left", "right", "bottom", "transform"].forEach(prop => {
+					avatar.style[prop] = "";
+					label.style[prop] = "";
+			  });
+
+			  const wrapper = document.createElement("div");
+			  wrapper.id = "winner-wrapper";
+			  wrapper.appendChild(avatar);
+			  wrapper.appendChild(label);
+			  podiumContainer.appendChild(wrapper);
+
+			  const avatarNewRect = avatar.getBoundingClientRect();
+			  const labelNewRect = label.getBoundingClientRect();
+			  const avatarDeltaX = avatarRect.left - avatarNewRect.left;
+			  const avatarDeltaY = avatarRect.top - avatarNewRect.top;
+			  const labelDeltaX = labelRect.left - labelNewRect.left;
+			  const labelDeltaY = labelRect.top - labelNewRect.top;
+
+			  avatar.style.transform = `translate(${avatarDeltaX}px, ${avatarDeltaY}px)`;
+			  label.style.transform = `translate(${labelDeltaX}px, ${labelDeltaY}px)`;
+			  
+
+			  avatar.getBoundingClientRect();
+			  label.getBoundingClientRect();
+
+			  avatar.style.transform = "";
+			  label.style.transform = "";
+			  requestAnimationFrame(() => {
+					avatar.classList.add("remove-transform-ease");
+					label.classList.add("remove-transform-ease");
+			  });
+
+			  avatar.style.transition = "";
+			  label.style.transition = "";
+			  avatar.classList.add("winner-avatar", rankStyle);
+			  label.classList.add("winner-label", rankStyle);
+
+			  selectedWinners.push({
+					avatar,
+					label,
+					rankStyle,
+					avatarPosStyles,
+					labelPosStyles
+			  });
+		  }
+    }
+
+    // --- Return/Quit button ---
+    returnToTitleScreenBtn.removeEventListener("click", handleLeaveAfterGameOver);
+    returnToTitleScreenBtn.addEventListener("click", handleLeaveAfterGameOver, {
+        once: true
+    });
+
+    // --- Match statistics button ---
+    showGameStatsBtn.removeEventListener("click", handleShowGameStats);
+    showGameStatsBtn.addEventListener("click", handleShowGameStats);
+
+    // --- Restart button ---
+    restartGameBtn.addEventListener("click", async() => {
+        const playerContainer = document.getElementById("player-container");
+        const statsContainer = document.getElementById("winner-stats");
+        if (statsContainer)
+            statsContainer.dataset.generated = "false";
+
+        for (const {
+            avatar: av,
+            label: lb,
+            rankStyle: rs,
+            avatarPosStyles: aps,
+            labelPosStyles: lps
+        }
+            of selectedWinners) {
+            // Step 1: Remove winner-related styles
+            av.classList.remove("winner-avatar", rs);
+            av.classList.remove("remove-transform-ease");
+            lb.classList.remove("winner-label", rs);
+            lb.classList.remove("remove-transform-ease");
+            // Step 2: Get current position (in podium)
+            const avRectStart = av.getBoundingClientRect();
+            const lbRectStart = lb.getBoundingClientRect();
+            // Step 3: Move DOM nodes back to player container
+            playerContainer.appendChild(av);
+            playerContainer.appendChild(lb);
+            // Step 4: Add back original position classes
+            aps.forEach(cls => av.classList.add(cls));
+            lps.forEach(cls => lb.classList.add(cls));
+            // Step 5: Get new position (in player container)
+            const avRectEnd = av.getBoundingClientRect();
+            const lbRectEnd = lb.getBoundingClientRect();
+            // Step 6: Calculate deltas
+            const avDeltaX = avRectStart.left - avRectEnd.left;
+            const avDeltaY = avRectStart.top - avRectEnd.top;
+            const lbDeltaX = lbRectStart.left - lbRectEnd.left;
+            const lbDeltaY = lbRectStart.top - lbRectEnd.top;
+            // Step 7: Apply inverse transform to move it back visually
+            av.style.transform = `translate(${avDeltaX}px, ${avDeltaY}px)`;
+            lb.style.transform = `translate(${lbDeltaX}px, ${lbDeltaY}px)`;
+            // Step 8: Animate to real position
+            requestAnimationFrame(() => {
+                av.classList.add("remove-transform-ease");
+                lb.classList.add("remove-transform-ease");
+                av.style.transform = "";
+                lb.style.transform = "";
+            });
+            // Remove the transition class after the animation finishes
+            av.addEventListener("transitionend", () => {
+                av.classList.remove("remove-transform-ease");
+            }, {
+                once: true
+            });
+            lb.addEventListener("transitionend", () => {
+                lb.classList.remove("remove-transform-ease");
+            }, {
+                once: true
+            });
+        }
+
+        // Step 9: Clean up winner DOM
+        podiumContainer.replaceChildren();
+        winnerSubwindow.style.opacity = "";
+        await delay(1000);
+        winnerSubwindow.style.display = "none";
+        winnerSubwindow.classList.remove("active");
+        // Step 10: Reset game and re-render
+        resetStateVariables(coldReset = true);
+        await renderCardDeck();
+        showStartButton();
+    }, {
+        once: true
+    });
+});
+
+function showStartButton() {
+	currentGameSessionId++; // 🔄 Invalidate any pending operations from older games
+	const existing = document.getElementById("start-game");
+    if (existing) existing.remove();
+	const startGameBtn = document.createElement("div");
     startGameBtn.classList.add("floating-text-btn");
     startGameBtn.classList.add("title");
     startGameBtn.textContent = "Start Game";
-    askPlayerBtn = document.createElement("div");
-    askPlayerBtn.classList.add('floating-text-btn');
-    askPlayerBtn.classList.add('title');
-    askPlayerBtn.classList.add('hidden');
-    askPlayerBtn.textContent = "Ask!";
-    gameScreen.appendChild(askPlayerBtn);
-    gameScreen.appendChild(startGameBtn);
+	 startGameBtn.id = "start-game";
+	 gameScreen.appendChild(startGameBtn);
     // Delay the class change by a tick so transition can apply
     requestAnimationFrame(() => {
         startGameBtn.classList.add("fade-in");
     });
-
-    gameQuitted = false;
 
     startGameBtn.addEventListener("click", async() => {
         const sessionId = currentGameSessionId;
@@ -1872,19 +2498,73 @@ async function setupGameScreen() {
         gameOver = false;
 
         await gameLoop(sessionId); // ✅ Guaranteed to run after all cards are dealt
-        // await waitUntilToggled(() => gameOver); // 👈 Wait until game ends
+        await waitUntilToggled(() => gameOver); // 👈 Wait until game ends
         // Game over: show final results
+		  await delay(1000);
         // createSets();
-        // console.log(SETS);
-        showWinner(sessionId);
+        await showWinner(sessionId);
     }, {
         once: true
     });
+}
+
+async function setupGameScreen() {
+    // Create game screen from template
+    gameScreen = document.createElement("div");
+    gameScreen.id = "game-screen";
+    gameScreen.style.display = "none";
+    gameScreen.innerHTML = `
+     <button id="menu-btn" class="glow-btn icon transparent">☰</button>
+     <div id="menu-subwindow" class= "translucent-light">
+       <button id="close-menu-btn" class="glow-btn icon-small transparent">✖</button>
+       <div class="menu-content">
+         <button class="glow-btn menu-option" id="toggle-sound">Sounds: ${soundFx ? "On" : "Off"}</button>
+         <button class="glow-btn menu-option" id="toggle-opp-info">Show All Cards: ${showOpponentInfo ? "Yes" : "No"}</button>
+			<button class="glow-btn menu-option" id="toggle-log">Allow Logging: ${logMode ? "Yes" : "No"}</button>
+         <button class="glow-btn menu-option" id="quit-game">Quit Game</button>
+       </div>
+     </div>
+	  <div id="winner-popup" class= "translucent-heavy" style="display: none;">
+       <div id="winner-title" class="title">Results</div>
+       <div id="winner-podium"></div>
+       <div id="winner-stats" style="display: none;"></div>
+		 <div class="menu-option-row">
+			<button class="glow-btn transparent-btn" id="return-to-title">⮌</button>
+			<button class="glow-btn transparent-btn" id="restart-game" style="width: 95px; height: 95px; font-size: 4rem;">⟳</button>
+			<button class="glow-btn transparent-btn" id="show-stats">𝙞</button>
+		 </div>
+     </div>
+   `;
+
+    renderPlayers();
+    await renderCardDeck();
+
+    document.body.appendChild(gameScreen);
+    // Add event listeners
+    const menuBtn = document.getElementById("menu-btn");
+    const menuSubwindow = document.getElementById("menu-subwindow");
+    const closeMenuBtn = document.getElementById("close-menu-btn");
+    const soundToggleMenuBtn = document.getElementById("toggle-sound");
+    const oppInfoToggleMenuBtn = document.getElementById("toggle-opp-info");
+    const matchLogsToggleMenuBtn = document.getElementById("toggle-log");
+    const quitGameMenuBtn = document.getElementById("quit-game");
+
+    await delay(1000); // wait one second before showing start button
+	 
+	 askPlayerBtn = document.createElement("div");
+    askPlayerBtn.classList.add('floating-text-btn');
+    askPlayerBtn.classList.add('title');
+    askPlayerBtn.classList.add('hidden');
+    askPlayerBtn.textContent = "Ask!";
+    gameScreen.appendChild(askPlayerBtn);
+	 
+	 gameQuitted = false;
+
+    showStartButton();
 
     menuBtn.addEventListener('click', () => {
         gamePaused = true;
         menuSubwindow.style.display = 'block';
-        menuSubwindow.style.opacity = '0';
         menuBtn.classList.add('menu-open'); // Apply glow
         requestAnimationFrame(() => {
             menuSubwindow.style.opacity = '1';
@@ -1892,9 +2572,9 @@ async function setupGameScreen() {
     });
 
     closeMenuBtn.addEventListener('click', () => {
-        menuSubwindow.style.opacity = '0';
+        menuSubwindow.style.opacity = '';
         menuSubwindow.addEventListener('transitionend', () => {
-            menuSubwindow.style.display = 'none';
+            menuSubwindow.style.display = '';
             menuBtn.classList.remove('menu-open'); // Remove glow
             gamePaused = false; // ✅ resume game
         }, {
@@ -1924,115 +2604,12 @@ async function setupGameScreen() {
     });
 
     // --- Quit game ---
-    quitGameMenuBtn.addEventListener("click", async() => {
-        // Fade out game screen
-        gameScreen.classList.remove("active");
-        gameScreen.style.opacity = 0;
-
-        // Stop bubbles
-        if (bubbleIntervalId) {
-            clearInterval(bubbleIntervalId);
-            bubbleIntervalId = null;
-        }
-
-        // Hide menu popup
-        menuSubwindow.classList.remove("active");
-
-        // Clearing game counters/trackers/flags
-        gameStart = false;
-        gameOver = true;
-        gamePaused = false;
-        gameQuitted = true;
-        userIsAsking = false;
-        Object.keys(MEMORIES).forEach(key => delete MEMORIES[key]);
-        Object.keys(HANDS).forEach(key => delete HANDS[key]);
-        Object.keys(SETS).forEach(key => delete SETS[key]);
-        PLAYER_LABELS_REF.length = 0;
-        PLAYERS_REF.length = 0;
-        HANDS_REF.length = 0;
-        DECK_REF.length = 0;
-        DECK.length = 0;
-        PLAYER = Math.floor(Math.random() * PLAYER_COUNT); // Set to a different player to start next game
-
-        // Remove references created in game-screen
-        askPlayerBtn = null;
-
-        // After transition, hide game-screen and show splash
-        await delay(500);
-        gameScreen.remove();
-        startScreen.style.display = "block";
-        startScreen.style.opacity = 1;
-
-        // Restart bubbles
-        bubbleIntervalId = setInterval(spawnBubble, 500);
-
-        // 🧹 Clean up any existing fishing line/hook
-        const existingLineContainer = document.getElementById("fishing-line-container");
-        if (existingLineContainer) {
-            existingLineContainer.remove();
-        }
-        // Respawn fishing line and hook
-        fishingLineContainer = document.createElement("div");
-        fishingLineContainer.id = "fishing-line-container";
-        fishingLine = document.createElement("div");
-        fishingLine.id = "fishing-line";
-        fishingHook = document.createElement("div");
-        fishingHook.id = "fishing-hook";
-        fishingLine.appendChild(fishingHook);
-        fishingLineContainer.appendChild(fishingLine);
-        document.body.appendChild(fishingLineContainer);
-        // Restart fishing line cycle
-        fishingCycleController = startFishingLineCycle();
-
-        // Respawn fish
-        const existingFish = document.getElementById("fish");
-        if (existingFish) {
-            existingFish.remove();
-        }
-        const fishNumber = Math.floor(Math.random() * 15) + 1;
-        fish = document.createElement("div");
-        fish.id = "fish";
-        fish.style.background = `url('./assets/fish/fish${fishNumber}.png') no-repeat center/contain`;
-        // Custom sizes for specific fishes
-        switch (fishNumber) {
-        case 8:
-            fishWidth = 272;
-            fishHeight = 162;
-            break;
-        case 9:
-            fishWidth = 600;
-            fishHeight = 201;
-            break;
-        case 10:
-            fishWidth = 727;
-            fishHeight = 220;
-            break;
-        case 12:
-            fishWidth = 400;
-            fishHeight = 400;
-            break;
-        case 13:
-            fishWidth = 848;
-            fishHeight = 423;
-            break;
-        default:
-            fishWidth = 360;
-            fishHeight = 180;
-            break;
-        }
-        fish.style.width = `${fishWidth}px`;
-        fish.style.height = `${fishHeight}px`;
-        document.body.appendChild(fish);
-        // 🔁 Re-apply its functionality
-        updateVelocity(); // Give it an initial movement vector
-        velocityIntervalId = setInterval(updateVelocity, 2500); // Change direction periodically
-        animateFish(); // Start animation loop
-        await delay(8000);
-        if (fishCycleController) {
-            fishCycleController.abort(); // still safe to do if its aborted
-        }
-        fishCycleController = startFishBlurCycle(); // Resume blur/zoom cycle
-    });
+    quitGameMenuBtn.addEventListener("click", async () => {
+		  menuSubwindow.style.opacity = '';
+		  await delay(200);
+		  menuSubwindow.classList.remove("active");
+        clearGameScreen();
+	 });
 }
 
 // Begin background gradient transition after 1s delay
@@ -2044,9 +2621,10 @@ bubbleIntervalId = setInterval(spawnBubble, 500); // Spawn one bubble every 0.5s
 updateVelocity();
 velocityIntervalId = setInterval(updateVelocity, 2500);
 animateFish();
-setTimeout(() => {
-    fishCycleController = startFishBlurCycle(); // Start the cycle once after initial delay
-}, 8000);
+// setTimeout(() => {
+    // fishCycleController = startFishBlurCycle(); // Start the cycle once after initial delay
+// }, 8000);
+fishCycleController = startFishBlurCycle(); // Start the cycle once after initial delay
 fishingCycleController = startFishingLineCycle();
 
 // Update screen dimensions on resize
@@ -2118,7 +2696,7 @@ optionsToSplashBtn.addEventListener('click', () => {
 // Player slider update
 playerSlider.addEventListener('input', () => {
     PLAYER_COUNT = parseInt(playerSlider.value);
-    playerCount.textContent = playerSlider.value;
+    playerCountLabel.textContent = playerSlider.value;
 });
 
 difficultyBtns.forEach(btn => {
@@ -2194,41 +2772,41 @@ soundToggleBtn.addEventListener("click", () => {
 });
 
 goBtn.addEventListener('click', debounce(() => {
-        // Stop spawning new bubbles and fishing line
-        clearInterval(bubbleIntervalId);
-        if (fishingCycleController) {
-            fishingCycleController.abort();
-        }
-        // Remove the fish from view
-        if (fish) {
-            // Start fading out
-            fish.style.opacity = '0';
+	  // Stop spawning new bubbles and fishing line
+	  clearInterval(bubbleIntervalId);
+	  if (fishingCycleController) {
+			fishingCycleController.abort();
+	  }
+	  // Remove the fish from view
+	  if (fish) {
+			// Start fading out
+			fish.style.opacity = '0';
 
-            // Wait for the transition to complete, then remove
-            fish.addEventListener('transitionend', () => {
-                if (fish && fish.parentNode) {
-                    fish.remove();
-                }
+			// Wait for the transition to complete, then remove
+			fish.addEventListener('transitionend', () => {
+				 if (fish && fish.parentNode) {
+					  fish.remove();
+				 }
 
-                if (fishingLineContainer && fishingLineContainer.parentNode) {
-                    fishingLineContainer.remove();
-                }
-            }, {
-                once: true
-            }); // ensures it runs only once
+				 if (fishingLineContainer && fishingLineContainer.parentNode) {
+					  fishingLineContainer.remove();
+				 }
+			}, {
+				 once: true
+			}); // ensures it runs only once
 
-            // Stop fish updates
-            cancelAnimationFrame(fishAnimationFrameId);
-            clearInterval(velocityIntervalId);
-            if (fishCycleController) {
-                fishCycleController.abort();
-            }
-        }
-        const oldGameScreen = document.getElementById("game-screen");
-        if (oldGameScreen) {
-            oldGameScreen.remove();
-        }
-        setupGameScreen();
-        // Fade out current widgets
-        fadedScreenSwitch(optionsScreen, gameScreen);
-    }));
+			// Stop fish updates
+			cancelAnimationFrame(fishAnimationFrameId);
+			clearInterval(velocityIntervalId);
+			if (fishCycleController) {
+				 fishCycleController.abort();
+			}
+	  }
+	  const oldGameScreen = document.getElementById("game-screen");
+	  if (oldGameScreen) {
+			oldGameScreen.remove();
+	  }
+	  setupGameScreen();
+	  // Fade out current widgets
+	  fadedScreenSwitch(optionsScreen, gameScreen);
+}));
