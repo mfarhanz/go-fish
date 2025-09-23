@@ -15,6 +15,7 @@ html {
 body {
   margin: 0;
   padding: 0;
+  height: 100vh;
   color: #0077b6;
   display: flex;
   justify-content: center;
@@ -108,7 +109,7 @@ h1 {
   border-radius: 0 100% 0% 0;
   transform-origin: bottom center;
   animation: sway ease-in-out infinite;
-  opacity: 0.25;
+  opacity: 0.4;
 }
 
 /* Keyframes for swaying side to side */
@@ -626,6 +627,7 @@ input[type="range"]::-webkit-slider-thumb {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  image-rendering: pixelated;
 }
 
 .player-avatar.glow:hover {
@@ -638,10 +640,10 @@ input[type="range"]::-webkit-slider-thumb {
 
 @keyframes tilt-shake {
   0%   { transform: var(--base-transform) rotate(0deg); }
-  10%  { transform: var(--base-transform) rotate(-10deg); }
-  20%  { transform: var(--base-transform) rotate(10deg); }
-  30%  { transform: var(--base-transform) rotate(-10deg); }
-  40%  { transform: var(--base-transform) rotate(10deg); }
+  10%  { transform: var(--base-transform) rotate(-8deg); }
+  20%  { transform: var(--base-transform) rotate(8deg); }
+  30%  { transform: var(--base-transform) rotate(-8deg); }
+  40%  { transform: var(--base-transform) rotate(8deg); }
   50%  { transform: var(--base-transform) rotate(0deg); }
   100% { transform: var(--base-transform) rotate(0deg); }
 }

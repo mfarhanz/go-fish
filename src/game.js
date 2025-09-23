@@ -5,8 +5,8 @@ let mouseHoldIntervalId = null;
 
 let gradientUpdateCtr = 0; // 0 = day, 1 = night
 const GRADIENT_UPDATE_DURATION = 120000; // 2 minutes
-let dayGradientColors = ['#075359', '#0f0530']; // top and bottom
-let nightGradientColors = ['#19014d', '#05010f']; // darker blues
+let dayGradientColors = ['#176f75', '#2b184f']; // top and bottom
+let nightGradientColors = ['#2b184f', '#05010f']; // darker blues
 
 let isDay = false;
 let isMouseDown = false;
@@ -35,7 +35,6 @@ let targetFishVelocity = {
 let cardBackDesignSrc;
 const SUITS = ['C', 'D', 'H', 'S'];
 const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-// const RANKS = ['A', '2'];
 const NAMING_IMAGINARY_FIRST_PTS = [
     "Cor", "Fin", "Bub", "Mar", "Shel", "Ree", "Tide", "Peb", "Glim", "Whis",
     "Nim", "Blip", "Echo", "Wave", "Drip", "Mist", "Sal", "Aqua", "Gush", "Flo",
@@ -72,6 +71,349 @@ const NAMING_DESCRIPTIVE_SECOND_PTS = [
     "Gurgle", "Net", "Hook", "Seeker", "Flip", "Bouncer",
     "Torrent", "Breaker", "Specter", "Spire", "Gleam", "Lure", "Crest", "Snare", "Pulse", "Tracer",
     "Vortex", "Howler", "Rift", "Vapor", "Echo", "Flare", "Tremor", "Surge", "Veil", "Harpoon"
+];
+
+const ASK_MESSAGES = [
+  // Neutral
+  "Hey @@, got any ##s?",
+  "Do you have any ##s, @@?",
+  "Got any ##s, @@?",
+  "@@, do you happen to have a ##?",
+  "Any ##s on you, @@?",
+  "Mind handing over your ##s, @@?",
+  "@@, I'm asking nicely — any ##s?",
+  "Looking for ##s — help me out, @@?",
+  "Could really use a ##, @@.",
+  "You got a ##, @@?",
+  // Funny-ish
+  "Hey @@, don’t make me go fish — got any ##s?",
+  "@@, I can smell those ##s from here!",
+  "Be honest, @@... you’re hoarding ##s, aren’t you?",
+  "If you’ve got ##s, now’s the time to confess, @@.",
+  "I’ll trade you absolutely nothing for all your ##s, @@.",
+  "@@, blink twice if you’ve got a ##.",
+  "Don’t make me bring out the fishin’ rod, @@ — ##s?",
+  "I had a dream you had ##s, @@. Make it come true.",
+  "@@, the fish demand tribute. Got any ##s?",
+  "You look like someone with too many ##s, @@. Hand 'em over.",
+  "@@, if you give me your ##s, I’ll say something nice about your gameplay."
+];
+
+const DEMAND_MESSAGES = [
+  "@@, give me your ##s!",
+  "I want your ##s, @@.",
+  "Hand ‘em over, @@. ##s.",
+  "You've got ##s. I want 'em.",
+  "Your ##s, now. Let’s go, @@.",
+  "Don’t make me ask twice, @@. ##s.",
+  "##s, @@. Fork ‘em over.",
+  "Gimme those ##s, @@.",
+  "@@. ##s. Now.",
+  "@@, it’s ## time.",
+  "Show me the ##s, @@.",
+  "##s. You got 'em, @@?",
+  "@@, hand me the ##s.",
+  "I know you’ve got ##s, @@.",
+  "@@, let’s make this easy — ##s.",
+  "Time to pay up, @@. ##s.",
+  "@@, drop the ##s.",
+  "C’mon, @@ — give up the ##s.",
+  "Let’s see those ##s, @@.",
+  "@@, we both know you’ve got the ##s.",
+  "Hey @@, I’ll take those ##s off your hands.",
+  // Confident / Direct
+  "Hand over the ##s, @@. I know you’ve got 'em.",
+  "No use hiding, @@ — I know you’ve got those ##s.",
+  "I’m not guessing — I *know* you have ##s, @@.",
+  "Come on, @@. I saw those ##s earlier.",
+  "I’ve done the math. The ##s are with you, @@.",
+  "You’re not fooling anyone @@. Give me the ##s.",
+  "We both know what you’re holding, @@.",
+  "Let’s not waste time, @@ — ##s. Now.",
+  "I watched you take those ##s three turns ago, @@.",
+  "I know your tells, @@. Fork over the ##s.",
+  "My instincts are screaming ‘##s’. Hand them over, @@.",
+  "I’m 100% locked in — it’s ##s time. Hand them over @@!",
+  // Cocky / Smug
+  "Time to surrender those ##s, @@.",
+  "I’ll take those ##s off your hands @@, thanks.",
+  "You’re too predictable, @@. Gimme them ##s.",
+  "Let’s not play games, @@. Just give me the ##s.",
+  "Don’t even try to lie — I saw those ##s, @@.",
+  "I’d bet money you’ve got ##s, @@.",
+  "I remember. You took those ##s earlier, @@.",
+  "I have witnesses. Where are the ##s, @@?",
+  "Time to pay up, @@ — I want the ##s.",
+  "Just gimme the ##s, @@. Don’t make me say please.",
+  "Your face totally gave away those ##s, @@.",
+  "Cut the act, @@ — where are the ##s?",
+  "You already know what I'm gonna ask you, @@.",
+  "You’re holding my ##s hostage, @@.",
+  "Your poker face sucks, @@. I know you have the ##s.",
+  "Don’t make me ask twice, @@. Gimme those ##s.",
+  "Cut the act, @@. Those ##s are mine now.",
+  "Time to cough up the ##s, @@.",
+  "I’m collecting ##s. I believe you have some, @@.",
+  "Don’t test me, @@. I came for the ##s.",
+  "You’ve had those ##s for too long, @@.",
+  "Give me the ##s, @@. No negotiation.",
+  "I’ve seen enough. Give me those damn ##s, @@.",
+  "Don't make me get dramatic, @@ — I want the ##s.",
+  "Time's up, @@. I'm claiming those ##s.",
+  "I can smell the ##s from here, @@."
+];
+
+
+const NO_CARD_MESSAGES = [
+  // Neutral
+  "Go Fish!",
+  "Nope, no ##s here.",
+  "Sorry @@, I don’t have any ##s.",
+  "No ##s in my hand, @@.",
+  "I’ve got nothing for you, @@.",
+  "No luck, @@ — go fish.",
+  "Nope, try again.",
+  "No ##s for you, @@.",
+  "Go fish, @@!",
+  "I don’t have that one, @@.",
+  "Better luck next time.",
+  "Nada. Go fish!",
+  "Nope. You’re fishing now.",
+  "No ##s. Draw one!",
+  // Funny-ish
+  "Go Fish! And may the odds be ever in your favor.",
+  "No ##s, just broken dreams.",
+  "I’d love to help, but I’m fresh out of ##s.",
+  "Sorry @@, all out of ##s. Please try again later.",
+  "Do I look like someone with ##s? Go fish!",
+  "No ##s, but I’ve got good vibes if that helps.",
+  "Go fish, @@ — and don’t look at me like that!",
+  "I’d give you a ## if I had one. I’m just that generous.",
+  "Nope, no ##s. But thanks for checking in, @@.",
+  "Go fish, and try not to pull a sea monster.",
+  "##s? Never heard of 'em.",
+  "All out of ##s, but I admire your persistence.",
+  "Go fish, brave soul.",
+  "No ##s in these waters.",
+  "Go fish — the pond awaits."
+];
+
+const LOST_CARD_MESSAGES = [
+  // Short, frustrated
+  "Damn!",
+  "Shit!",
+  "Goddamn!",
+  "Frick!",
+  "Damn it!",
+  "Shitballs!",
+  "Balls!",
+  "Come on!",
+  "Seriously?!",
+  "Goddamn it.",
+  "You've got to be kidding me.",
+  "This again?",
+  "Unreal.",
+  "Not the ##s!",
+  "I liked those ##s!",
+  "Well, shit.",
+  "And there they go...",
+  "Damn it, @@.",
+  "Take them, then.",
+  "Whatever.",
+  "Fine.",
+  "Enjoy your stupid ##s.",
+  "I just got those!",
+  "Not again...",
+  "I hate this game.",
+  // Funny-ish / sarcastic
+  "Yeah, sure, take my whole hand while you're at it.",
+  "Oh cool, my favorite ##s.",
+  "Great. Love that for me.",
+  "You must be so proud, @@.",
+  "Someone's feeling lucky today.",
+  "You happy now, @@?",
+  "Here’s your precious ##s. Happy now?",
+  "You're welcome, I guess.",
+  "I live to serve.",
+  "Nothing personal, huh? Sure.",
+  "Well at least *someone* is having fun.",
+  "Plot twist: I actually wanted you to have them.",
+  // Dramatic / salty
+  "Betrayal!",
+  "This is robbery.",
+  "Unbelievable.",
+  "I see how it is.",
+  "This game is rigged.",
+  "Cool. Cool cool cool.",
+  "I’ll remember this betrayal, @@.",
+  "You’ll regret this, @@!",
+  "I’ve made a huge mistake.",
+  "I had a feeling you'd say that.",
+  "Just my luck.",
+  "I knew this day would come.",
+  "My empire is crumbling.",
+  "So this is what rock bottom feels like.",
+  "I'm not crying, you're crying.",
+  "I will remember this, @@.",
+  "Revenge will be mine.",
+  "You've made a powerful enemy today.",
+  "I have nothing left but spite.",
+  "You’ll pay for this, @@.",
+  "This isn’t over @@!",
+  "You've awakened something dark in me.",
+  "I swear on my last card — vengeance."
+];
+
+const GOT_CARD_MESSAGES = [
+  // Confident / assertive
+  "My turn again!",
+  "Boom. Got 'em.",
+  "Thanks, @@.",
+  "Knew you had those ##s.",
+  "Nice. I’ll go again.",
+  "Told you I was onto something.",
+  "I’ll take those.",
+  "Gimme those ##s.",
+  "As expected.",
+  "You make this too easy, @@.",
+  "Should’ve just handed them over sooner.",
+  "I eat ##s for breakfast.",
+  // Smug / playful
+  "Oh? What’s this? A gift?",
+  "Oof. That’s gotta hurt.",
+  "Appreciate it, @@.",
+  "You shouldn’t have. Really.",
+  "You just played yourself.",
+  "Love that for me.",
+  "Delicious.",
+  "Yesss.",
+  "Mine now.",
+  "And the prophecy was fulfilled.",
+  "I knew I smelled some ##s nearby.",
+  "I sense a streak coming on.",
+  "You handing these out for free now?",
+  // Cool / casual
+  "I'll keep going then.",
+  "Alright, my move again.",
+  "Don’t mind if I do.",
+  "Let’s keep this rolling.",
+  "Thanks for keeping it interesting.",
+  "Much obliged.",
+  "That worked out.",
+  "The game favors me today.",
+  // Cheeky / taunting
+  "Oops — were those important?",
+  "Hope you didn’t need those ##s.",
+  "You should hide your tells better.",
+  "Another win for me.",
+  "It’s almost like I know what I’m doing.",
+  "Ever get tired of losing cards, @@?",
+  "Should I slow down a bit?",
+  "You blinked. That’s where you went wrong.",
+  "Are you *sure* you’re trying?",
+  "This isn’t even fair anymore."
+];
+
+const UNSURE_MESSAGES = [
+  // Thoughtful / neutral
+  "Hmmmmm...",
+  "Let me think...",
+  "Tricky one.",
+  "Who do I even ask here?",
+  "This is a tough call.",
+  "Alright, let’s see...",
+  "Gotta take a wild guess here.",
+  "Uhhh...",
+  "Thinking… thinking…",
+  "Okay... umm...",
+  "Errr.....",
+  "Shoot.....",
+  // Forgetful / sheepish
+  "Crap, I forgot who had what.",
+  "Was anyone even paying attention?",
+  "I probably should’ve remembered that.",
+  "I blanked. Totally blanked.",
+  "Wait, what just happened last turn?",
+  "I swear someone just asked for ##s... but who?",
+  "Should've taken notes.",
+  "Why don’t I ever remember anything?",
+  "Okay brain, do your thing... any time now...",
+  // Random guess energy
+  "Time to roll the dice.",
+  "Let’s just go with a gut feeling.",
+  "Yolo.",
+  "Eenie meenie miney moe...",
+  "Let’s guess and hope for the best.",
+  "Instincts, don’t fail me now.",
+  "Could be anyone…",
+  "I have no clue. Literally none.",
+  "Wild guess incoming.",
+  // Pretend strategy / fake confidence
+  "I’m playing 4D chess here, trust me.",
+  "Just weighing my options.",
+  "This is all part of the plan.",
+  "You wouldn’t understand the strategy.",
+  "Let me run the simulation real quick...",
+  "Strategic pause. Very professional.",
+  "I’m just giving you false hope.",
+  "Watch this masterclass in random guessing.",
+  // Silly / dramatic
+  "Destiny, guide my hand.",
+  "I summon the spirit of the fish.",
+  "What would a shark do?",
+  "Maybe the deck will whisper the answer.",
+  "Universe, send me a sign.",
+  "Closing my eyes and letting fate decide.",
+  "Dear card gods, take the wheel.",
+  "Just gonna vibe this one out.",
+  "This is fine. Everything is fine."
+];
+
+const FINISHED_MESSAGES = [
+  // Neutral / straightforward
+  "I’m just a spectator now!",
+  "I'm out — no more cards here.",
+  "Guess I’ll just watch from here.",
+  "Nothing left for me to play.",
+  "I'm done. Good luck, everyone!",
+  "I’ve got no cards left. I’m out.",
+  "I’m all out. Go on without me.",
+  "Finished up. I’ll be watching.",
+  "No cards, no problems.",
+  // Playful
+  "I'm retired now. Call me Coach.",
+  "I’ve entered my observer era.",
+  "From player to cheerleader in one move.",
+  "Consider me a passive threat.",
+  "I'm just here for the drama now.",
+  "Ghosting this game — literally.",
+  "Time to judge everyone else's choices.",
+  "I've transcended the game.",
+  "I'm basically the audience now.",
+  "One with the void. No cards. Just vibes.",
+  // Funny / sarcastic
+  "I'm all outta cards to give.",
+  "I'm out. Mentally, physically, and card-ly.",
+  "I’d play a card, but... y’know... I don’t have any.",
+  "I’m just here so I won’t get fined.",
+  "What’s it like to still be playing? Must be nice.",
+  "I’m the moral support now.",
+  "Let me know when the snacks arrive.",
+  "I have ascended. Cardless, but wise.",
+  "Can someone deal me a personality instead?",
+  "I'm the designated spectator now. You’re welcome.",
+  "Should’ve retired earlier — feels good.",
+  // Dramatic / RP-style
+  "My journey ends here.",
+  "I’ve played my last card. Literally.",
+  "The deck has spoken. I am finished.",
+  "My watch has ended.",
+  "I go now to the land beyond the table.",
+  "Tell my hand… I loved it.",
+  "I fade into legend.",
+  "No cards remain — only memory.",
+  "This is where my story ends.",
+  "Gone, but still judging."
 ];
 
 const LOTTIE_URLS = [
@@ -728,11 +1070,14 @@ async function checkForSets() {
  * @param {string[]} cards - The current player's card ranks (e.g., ["5", "K", "A"])
  * @returns {[number, string[]] | null} - A tuple: [opponentId, matchingRanks] or null if no match found
  */
-function getMostFavourablePlayer(cards) {
+function getMostFavourablePlayerToAsk(cards) {
     const playerMemory = MEMORIES[PLAYER];
     const cardSet = new Set(cards);
 
     for (const opp in playerMemory) {
+        if (!HANDS[opp] || HANDS[opp].length === 0) {	// Skip if opponent has no cards
+            continue;
+        }
         const memorySet = playerMemory[opp];
         const common = [...memorySet].filter(rank => cardSet.has(rank));
         if (common.length > 0) {
@@ -741,6 +1086,29 @@ function getMostFavourablePlayer(cards) {
     }
 
     return null;
+}
+
+/**
+ * Select a random opponent who has at least one card in hand.
+ * @returns {number | null} - The ID of a valid opponent, or null if none found
+ */
+function getRandomOpponentWithCards() {
+    const eligiblePlayers = [];
+
+    for (const playerId in HANDS) {
+        const id = parseInt(playerId);
+        if (id === PLAYER) continue; // skip self
+        if (HANDS[id] && HANDS[id].length > 0) {
+            eligiblePlayers.push(id);
+        }
+    }
+
+    if (eligiblePlayers.length === 0) {
+        return null; // no one to ask
+    }
+
+    const randomIndex = Math.floor(Math.random() * eligiblePlayers.length);
+    return eligiblePlayers[randomIndex];
 }
 
 function forgetRanks(ranks) {
@@ -811,6 +1179,46 @@ function showDetails() {
     }
 }
 
+function getRandomMessage(msgType, ...args) {
+  // Choose the message list based on msgType
+  let msg;
+  switch (msgType) {
+	  case 0:	// asking messages
+	     msg = choice(ASK_MESSAGES);
+		  break;
+	  case 1:	// demanding messages
+	     msg = choice(DEMAND_MESSAGES);
+		  break;
+	  case 2:	// receiving messages
+	     msg = choice(GOT_CARD_MESSAGES);
+		  break;
+	  case 3:	// no cards to give messages
+	     msg = choice(NO_CARD_MESSAGES);
+		  break;
+	  case 4:	// giving card messages
+	     msg = choice(LOST_CARD_MESSAGES);
+		  break;
+	  case 5:	// unsure who to ask messages
+	     msg = choice(UNSURE_MESSAGES);
+		  break;
+	  case 6:	// done with game messages
+	     msg = choice(FINISHED_MESSAGES);
+		  break;
+	  default:
+	     msg = "Uhh...what?";
+  }
+  
+  // Replace placeholder tokens only if present
+  if (msg.includes("@@")) {
+    msg = msg.replace(/@@/g, args[0] ?? "???");
+  }
+
+  if (msg.includes("##")) {
+    msg = msg.replace(/##/g, args[1] ?? "???");
+  }
+  return msg;
+}
+
 function highlightInfo(msg) {
     logMessage(`%c${msg}`, infoFontStyle);
 }
@@ -870,29 +1278,30 @@ async function handleUserTurn(sessionId) {
     askPlayerBtn.classList.remove("grow-and-fade-out");
 
     logMessage(`${PLAYERS_REF[PLAYER].playerName} asks {PLAYERS_REF[userChosenPlayer].playerName} for ${userChosenRank}s`);
-    await guessPlayerOrGoFish(sessionId, userChosenPlayer, userChosenRank, `Hey ${PLAYERS_REF[userChosenPlayer].playerName}, got any ${userChosenRank}s?`);
+    await guessPlayerOrGoFish(sessionId, userChosenPlayer, userChosenRank, getRandomMessage(0, PLAYERS_REF[userChosenPlayer].playerName, userChosenRank));
 }
 
 const guessPlayerOrGoFish = checkSession(async function (sessionId, player, card, guess) {
+	 if (player === null) return;
     const cond = playerVsAI && PLAYER === 0;
-    await showSpeechBubble(PLAYER, guess);
+    await showSpeechBubble(PLAYER, guess, 2200);
 	 const success = await takeCardFromPlayer(player, card);
 	 RANK_INFO[card] ++;
 	 PLAYER_TURN_INFO[PLAYER][PLAYER_TURN_INFO[PLAYER].length - 1][1].push(success);
     if (success) {
-        await showSpeechBubble(player, 'Damn!');
+        await showSpeechBubble(player, getRandomMessage(4, PLAYERS_REF[PLAYER].playerName, card));
         highlightSuccess(`${PLAYERS_REF[PLAYER].playerName} took all ${card}s from ${PLAYERS_REF[player].playerName}!`);
         updateMemories(card, player);
         forgetRanks(await checkForSets());
         await checkIfEmptyHand(PLAYER);
-        await showSpeechBubble(PLAYER, "My turn again!");
+        await showSpeechBubble(PLAYER, getRandomMessage(2, PLAYERS_REF[player].playerName, card));
         highlightInfo(`${PLAYERS_REF[PLAYER].playerName} gets to play again`);
         showDetails();
         await play(sessionId); // recursive call for extra turn
     } else {
         logMessage(`${PLAYERS_REF[player].playerName} doesn't have any ${card}s for ${PLAYERS_REF[PLAYER].playerName}. `
              + `${PLAYERS_REF[PLAYER].playerName} takes a card from the top of the deck.`);
-        await showSpeechBubble(player, 'Go Fish!');
+        await showSpeechBubble(player, getRandomMessage(3, PLAYERS_REF[PLAYER].playerName, card));
         await takeCardFromDeck(PLAYER);
         updateMemories(card, player);
         forgetRanks(await checkForSets());
@@ -908,7 +1317,7 @@ const play = checkSession(async function (sessionId) {
     await checkIfEmptyHand(PLAYER);
 	 forgetRanks(await checkForSets());
     if (HANDS[PLAYER] && HANDS[PLAYER].length === 0) {	// can add check for deck length...but due to the current game flow it will always be length 0 if current condition is true
-        await showSpeechBubble(PLAYER, "I am just a spectator now!");
+        await showSpeechBubble(PLAYER, getRandomMessage(6));
         logMessage(`${PLAYERS_REF[PLAYER].playerName} has no cards left, and the deck has ${DECK.length} card(s). Player's turn is skipped.`);
         return;
     }
@@ -921,27 +1330,28 @@ const play = checkSession(async function (sessionId) {
             logMessage(`${PLAYERS_REF[PLAYER].playerName} is looking for any cards in the set: ${cardsByRank}`);
         }
 
-        const playerToAsk = getMostFavourablePlayer(cardsByRank);
+        const playerToAsk = getMostFavourablePlayerToAsk(cardsByRank);
 
         if (!playerToAsk) {
             logMessage(`${PLAYERS_REF[PLAYER].playerName} doesn't know who the best person to ask is.`);
-            await showSpeechBubble(PLAYER, "Hmmmmm...");
+            await showSpeechBubble(PLAYER, getRandomMessage(5), 2200);
 
-            const players = Object.keys(MEMORIES[PLAYER]).map(Number);
-            const chosenPlayer = players[Math.floor(Math.random() * players.length)];
-            const chosenCard = cardsByRank[Math.floor(Math.random() * cardsByRank.length)];
+            // const players = Object.keys(MEMORIES[PLAYER]).map(Number);
+            // const chosenPlayer = players[Math.floor(Math.random() * players.length)];
+				const chosenPlayer = getRandomOpponentWithCards();
+            const chosenCard = choice(cardsByRank);
 
             logMessage(`${PLAYERS_REF[PLAYER].playerName} has decided to ask ${PLAYERS_REF[chosenPlayer].playerName} for ${chosenCard}s`);
-            await guessPlayerOrGoFish(sessionId, chosenPlayer, chosenCard, `Hey ${PLAYERS_REF[chosenPlayer].playerName}, got any ${chosenCard}s?`);
+            await guessPlayerOrGoFish(sessionId, chosenPlayer, chosenCard, getRandomMessage(0, PLAYERS_REF[chosenPlayer].playerName, chosenCard));
         } else {
             const cond2 = playerVsAI && playerToAsk[0] === 0;
-            const chosenCard = playerToAsk[1][Math.floor(Math.random() * playerToAsk[1].length)];
+            const chosenCard = choice(playerToAsk[1]);
 
             logMessage(`${PLAYERS_REF[PLAYER].playerName} believes ${PLAYERS_REF[playerToAsk[0]].playerName} has the cards they need...`);
             logMessage(`${PLAYERS_REF[PLAYER].playerName} has decided to ask ${PLAYERS_REF[playerToAsk[0]].playerName} for ${chosenCard}s`);
 
             // bots can still be 'forgetful' sometimes, so need to check both cases
-            await guessPlayerOrGoFish(sessionId, playerToAsk[0], chosenCard, `${PLAYERS_REF[playerToAsk[0]].playerName}, give me your ${chosenCard}s!`);
+            await guessPlayerOrGoFish(sessionId, playerToAsk[0], chosenCard, getRandomMessage(1, PLAYERS_REF[playerToAsk[0]].playerName, chosenCard));
         }
     }
 });
@@ -1044,7 +1454,6 @@ async function onClickCard(event) {
 }
 
 async function onClickPlayer(event) {
-    // if (!gameStart || !(playerVsAI && PLAYER === 0))
     if (!gameStart)
         return;
 
@@ -1053,11 +1462,16 @@ async function onClickPlayer(event) {
 
 	 if (!playerVsAI || (playerVsAI && playerId !== 0)) {
 		 userChosenPlayer = playerId;
+		 const currentTransform = getComputedStyle(clickedAvatar).transform;
+		 // Fallback if transform is 'none'
+		 const baseTransform = currentTransform === 'none' ? '' : currentTransform;
+		 clickedAvatar.style.setProperty('--base-transform', baseTransform);
 		 clickedAvatar.classList.add('tilt-shake');
 		 clickedAvatar.addEventListener('animationend', () => {
-			  clickedAvatar.classList.remove('tilt-shake');
+		     clickedAvatar.classList.remove('tilt-shake');
+		     clickedAvatar.style.removeProperty('--base-transform');
 		 }, {
-			  once: true
+		     once: true
 		 });
 	 }
 }
@@ -1185,21 +1599,30 @@ async function generateRandomAvatar() {
     canvas.width = targetSize;
     canvas.height = targetSize;
     const ctx = canvas.getContext("2d");
-
+	 ctx.imageSmoothingEnabled = false;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // === DRAW FACE ===
+    const scaleFactor = scale * 1.08;	// face slightly scaled more
+    const destW = faceTileW * scaleFactor;
+    const destH = faceTileH * scaleFactor;
+	 const destX = - (destW - faceTileW * scale) / 2;
+	 const destY = - (destH - faceTileH * scale) / 2
+
     ctx.drawImage(
         faceSheet,
         faceCol * faceTileW, faceRow * faceTileH, // Source X, Y
         faceTileW, faceTileH, // Source W, H
-        0, 0, // Dest X, Y
-        faceTileW * scale, faceTileH * scale // Dest W, H
-    );
+        destX, destY, // Center X, Y
+        destW, destH);
+    ctx.globalAlpha = 0.01;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(destX, destY, destW, destH);
+    ctx.globalAlpha = 1.0;
 
     // === DRAW EYES ===
     const eyesOffsetX = (targetSize - eyesTileW * scale) / 2;
-    const eyesOffsetY = 0; // align with top
+    const eyesOffsetY = targetSize * 0.3 - (eyesTileH * scale) / 2; // align with top
     ctx.drawImage(
         eyesSheet,
         eyesCol * eyesTileW, eyesRow * eyesTileH,
@@ -1210,8 +1633,7 @@ async function generateRandomAvatar() {
     // === DRAW MOUTH ===
     // Mouth horizontal center (same as before)
     const mouthOffsetX = (targetSize - mouthTileW * scale) / 2;
-    // Mouth vertical position - let's place it roughly around 65% height of the face
-    const mouthOffsetY = targetSize * 0.7 - (mouthTileH * scale) / 2;
+    const mouthOffsetY = targetSize * 0.67 - (mouthTileH * scale) / 2;
     ctx.drawImage(
         mouthSheet,
         mouthCol * mouthTileW, mouthRow * mouthTileH,
@@ -1320,23 +1742,28 @@ async function renderPlayers() {
 
     // === CREATE NPC PLAYER ELEMENTS ===
     for (let i = 0; i < positions.length; i++) {
-        const avatarImg = document.createElement("div");
-        avatarImg.classList.add("player-avatar");
-
-        // Pick a random avatar
-        // const avatarNumber = Math.floor(Math.random() * 20) + 1; // 1 to 20
-        // const avatar = `./assets/avatars/av${avatarNumber}.png`;
-		  // avatarImg.src = avatar.src;
-		  const avatar = await generateRandomAvatar();
-        avatarImg.alt = `Player ${i}`;
-		  avatarImg.appendChild(avatar);
-
+		 let avatarImg;
+		 try {
+		     avatarImg = document.createElement("div");
+		     avatarImg.classList.add("player-avatar");
+		     const avatar = await generateRandomAvatar();
+		     avatarImg.appendChild(avatar);
+		 }
+		 catch (err) {
+		     avatarImg = document.createElement("img");
+		     avatarImg.classList.add("player-avatar");
+		     const avatarNumber = Math.floor(Math.random() * 20) + 1; // 1 to 20
+		     const avatar = `./assets/avatars/sample/av${avatarNumber}.png`;
+		     avatarImg.src = avatar;
+		 }
+		 
         // Assign ID and Name
         const id = playerVsAI ? i + 1 : i;
         const playerName = generateRandomName();
         avatarImg.dataset.id = id; // Optional for HTML-side use
         avatarImg.avatarId = id; // JS-side custom property
         avatarImg.playerName = playerName; // JS-side custom property
+		  avatarImg.alt = `Player ${i}`;
 
         // Apply positioning
 		  // Generate a unique class name for this player
@@ -1470,8 +1897,8 @@ async function renderCardDeck() {
         }
     }
 
-    // shuffle(DECK); // shuffles DECK in-place
-	 reorderAlternating(DECK);	// used for testing checkForSet animations, use when PLAYER_COUNT=4
+    shuffle(DECK); // shuffles DECK in-place
+	 // reorderAlternating(DECK);	// used for testing checkForSet animations, use when PLAYER_COUNT=4
 	 
 	 chosenAnimation = Math.round(Math.random());
 
@@ -1721,7 +2148,7 @@ const dealInitialHands = checkSession(async function (sessionId, cardCount = 5) 
     const totalPlayers = PLAYER_COUNT;
     for (let currentCard = 0; currentCard < cardCount; currentCard++) {
         for (let currentPlayer = 0; currentPlayer < totalPlayers; currentPlayer++) {
-            dealCardFromDeck(currentPlayer);		// toggle await here, to deal cards instantly or one by one
+            await dealCardFromDeck(currentPlayer);		// toggle await here, to deal cards instantly or one by one
         }
     }
 	 
@@ -2483,6 +2910,7 @@ function showStartButton() {
 
     startGameBtn.addEventListener("click", async() => {
         const sessionId = currentGameSessionId;
+		  initStateBuffers(PLAYER_COUNT);
 
         startGameBtn.style.animation = "none";
         startGameBtn.textContent = `${PLAYERS_REF[PLAYER].playerName} takes the first turn!`;
@@ -2490,8 +2918,7 @@ function showStartButton() {
         startGameBtn.classList.add("grow-and-fade-out");
         await delay(2000); // Wait for fade-out animation to complete before removing
         startGameBtn.remove(); // Remove from DOM itself
-
-        initStateBuffers(PLAYER_COUNT);
+		  
         await dealInitialHands(sessionId, PLAYER_COUNT <= 4 ? 7 : 5);
 
         gameStart = true;
@@ -2613,9 +3040,7 @@ async function setupGameScreen() {
 }
 
 // Begin background gradient transition after 1s delay
-setTimeout(() => {
-    requestAnimationFrame((ts) => updateGradient(performance.now()));
-}, 1000);
+requestAnimationFrame((ts) => updateGradient(performance.now()));
 spawnSeagrass(); // Call once when game loads
 bubbleIntervalId = setInterval(spawnBubble, 500); // Spawn one bubble every 0.5s (adjust as needed)
 updateVelocity();
