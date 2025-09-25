@@ -700,6 +700,11 @@ function delayAbortable(ms, signal) {
     });
 }
 
+function triggerAudioCue(cue) {
+	if (!soundFx) return;
+	SFX.play(cue);
+}
+
 function randomVelocity() {
     // speed between -1.5 and 1.5 px/frame
     return (Math.random() * 3) - 1.5;
@@ -1002,13 +1007,18 @@ async function deleteVisualCard(playerId, indices) {
 		  card.style.transform = "";
 		  card.classList.remove("card-take");
         card.classList.add("card-remove");
-
-        // Remove from DOM after animation
-        card.addEventListener("transitionend", () => {
-            card.remove();
-        }, {
-            once: true
-        });
+		  
+		  triggerAudioCue(`removeCard${Math.floor(Math.random() * 3) + 1}`);
+		  
+		  // Remove from DOM after animation
+		  await delay(100);	// removing cards one by one vs...
+		  card.remove();
+		  
+        // card.addEventListener("transitionend", () => {	// ...removing cards all together..hmm..
+            // card.remove();
+        // }, {
+            // once: true
+        // });
 
         // Remove from HANDS_REF
         HANDS_REF[playerId].splice(index, 1);
@@ -1026,6 +1036,7 @@ async function checkForSets() {
     const index = {};
     const toRemove = [];
     const removedRanks = [];
+	 const cond = playerVsAI && PLAYER === 0;
 
     HANDS[PLAYER].forEach((card, i) => {
         const rank = card.split('of')[0];
@@ -1046,8 +1057,9 @@ async function checkForSets() {
             SETS[PLAYER].push(rank);
             removedRanks.push(rank);
             showFloatingText(PLAYER, "+SET!");
+				triggerAudioCue(cond ? 'cardSetPlayer' : 'cardSetNPC');
             await delay(300);
-            const name = playerVsAI && PLAYER === 0 ? "You" : `Player${PLAYER}`;
+            const name = cond ? "You" : `Player${PLAYER}`;
             highlightSuccess(`${name} made a set of ${rank}s!`);
         }
     }
@@ -1281,10 +1293,10 @@ async function handleUserTurn(sessionId) {
     await guessPlayerOrGoFish(sessionId, userChosenPlayer, userChosenRank, getRandomMessage(0, PLAYERS_REF[userChosenPlayer].playerName, userChosenRank));
 }
 
-const guessPlayerOrGoFish = checkSession(async function (sessionId, player, card, guess) {
+const guessPlayerOrGoFish = checkSession(async function (sessionId, player, card, guess, guessDelay = null) {
 	 if (player === null) return;
     const cond = playerVsAI && PLAYER === 0;
-    await showSpeechBubble(PLAYER, guess, 2200);
+    await showSpeechBubble(PLAYER, guess, 2200, guessDelay);
 	 const success = await takeCardFromPlayer(player, card);
 	 RANK_INFO[card] ++;
 	 PLAYER_TURN_INFO[PLAYER][PLAYER_TURN_INFO[PLAYER].length - 1][1].push(success);
@@ -1336,13 +1348,12 @@ const play = checkSession(async function (sessionId) {
             logMessage(`${PLAYERS_REF[PLAYER].playerName} doesn't know who the best person to ask is.`);
             await showSpeechBubble(PLAYER, getRandomMessage(5), 2200);
 
-            // const players = Object.keys(MEMORIES[PLAYER]).map(Number);
-            // const chosenPlayer = players[Math.floor(Math.random() * players.length)];
 				const chosenPlayer = getRandomOpponentWithCards();
             const chosenCard = choice(cardsByRank);
+				const thinkDelay = Math.floor(Math.random() * 2001) + 1000;	// just a brief delay to simulate the bot 'thinking' (though it's not really)
 
             logMessage(`${PLAYERS_REF[PLAYER].playerName} has decided to ask ${PLAYERS_REF[chosenPlayer].playerName} for ${chosenCard}s`);
-            await guessPlayerOrGoFish(sessionId, chosenPlayer, chosenCard, getRandomMessage(0, PLAYERS_REF[chosenPlayer].playerName, chosenCard));
+            await guessPlayerOrGoFish(sessionId, chosenPlayer, chosenCard, getRandomMessage(0, PLAYERS_REF[chosenPlayer].playerName, chosenCard), thinkDelay);
         } else {
             const cond2 = playerVsAI && playerToAsk[0] === 0;
             const chosenCard = choice(playerToAsk[1]);
@@ -1426,10 +1437,12 @@ function resetHandPosition(player) {
 
 function onClickAsk() {
     if (isValidUserSelection()) {
+		  triggerAudioCue('askPlayer');
         askPlayerBtn.removeEventListener('click', onClickAsk);
         userIsAsking = false;
     } else {
         // Shake the button or flash to indicate invalid
+		  triggerAudioCue('askPlayerFail');
         askPlayerBtn.classList.add('vertical-shake');
         askPlayerBtn.addEventListener('animationend', () => {
             askPlayerBtn.classList.remove('vertical-shake');
@@ -1445,6 +1458,7 @@ async function onClickCard(event) {
 
     const clickedCard = event.currentTarget;
     resetHandPosition(PLAYER);
+	 triggerAudioCue('cardClick');
 
     // Raise clicked card by adding translateY and scale to the original rotation
     const angle = clickedCard.dataset.angle || "0";
@@ -1461,6 +1475,7 @@ async function onClickPlayer(event) {
     const playerId = clickedAvatar.avatarId;
 
 	 if (!playerVsAI || (playerVsAI && playerId !== 0)) {
+		 triggerAudioCue('playerClick');
 		 userChosenPlayer = playerId;
 		 const currentTransform = getComputedStyle(clickedAvatar).transform;
 		 // Fallback if transform is 'none'
@@ -1649,7 +1664,6 @@ async function generateRandomAvatar() {
     return finalImg;
 }
 
-
 async function renderPlayers() {
     const positions = [];
     const namePositions = [];
@@ -1753,7 +1767,7 @@ async function renderPlayers() {
 		     avatarImg = document.createElement("img");
 		     avatarImg.classList.add("player-avatar");
 		     const avatarNumber = Math.floor(Math.random() * 20) + 1; // 1 to 20
-		     const avatar = `./assets/avatars/sample/av${avatarNumber}.png`;
+		     const avatar = `./assets/avatars/preset/av${avatarNumber}.png`;
 		     avatarImg.src = avatar;
 		 }
 		 
@@ -1923,9 +1937,12 @@ async function renderCardDeck() {
 			  duration: 400,
 			  easing: 'ease-out',
 			  delay: i * 20,
-			}).finished.then(() => {	// When animation ends, ensure final transform is applied, but animation discarded
+			}).finished.then(async () => {	// When animation ends, ensure final transform is applied, but animation discarded
 			  card.style.transform = `rotate(${rotation}deg)`; // final rotation
 			  card.style.opacity = ''; // reset to base opacity style
+			  if (i % 2 == 0 && i < 40) {
+					triggerAudioCue(`cardToDeck${Math.floor(Math.random() * 4) + 1}`);
+				}
 			});
 	 }
 }
@@ -1939,34 +1956,14 @@ function waitForTransitionEnd(element) {
     });
 }
 
-// Utility to wait for all CSS transition to end on an element
-function waitForAllTransitionsEnd(element) {
-    return new Promise(resolve => {
-        const computedStyle = getComputedStyle(element);
-        const properties = computedStyle.transitionProperty.split(',').map(p => p.trim());
-        let remaining = properties.length;
-        const onEnd = (e) => {
-            // Only track events for this element (not children)
-            if (e.target !== element) return;
-            remaining--;
-            if (remaining <= 0) {
-                element.removeEventListener("transitionend", onEnd);
-                resolve();
-            }
-        };
-
-        element.addEventListener("transitionend", onEnd);
-    });
-}
-
-async function showSpeechBubble(playerId, message, duration = 1500) {
+async function showSpeechBubble(playerId, message, endDelay = 500, startDelay = null) {
     const avatar = PLAYERS_REF[playerId];
     if (!avatar || !gameScreen)
         return;
 
     const bubble = document.createElement("div");
     bubble.className = "speech-bubble";
-    bubble.textContent = message;
+	 bubble.textContent = ""; // Start empty for typing effect
 
     // Position using bounding rect like your floating text
     const avatarRect = avatar.getBoundingClientRect();
@@ -1977,11 +1974,29 @@ async function showSpeechBubble(playerId, message, duration = 1500) {
 
     bubble.style.left = `${x}px`;
     bubble.style.top = `${y}px`;
-
+	 
+	 triggerAudioCue('speechBubble');
     gameScreen.appendChild(bubble);
+	 
+	 if (!startDelay) {
+		 await delay(endDelay/2);
+	 } else {
+		 await delay(startDelay);
+	 }
+	 
+	 // show message one character at a time
+	 const msgTemp = message.toUpperCase();
+    const typingSpeed = 60; // ms per character
+    for (let i = 0; i < message.length; i++) {
+		  const charCode = msgTemp.charCodeAt(i);
+		  if (charCode >= 65 && charCode <= 90)
+			  triggerAudioCue(`playerSound${msgTemp[i]}`);	// play a specific sound for each letter
+        bubble.textContent += message[i];
+        await delay(typingSpeed);
+    }
 
-    // Wait for the display duration
-    await delay(duration);
+    // Wait a bit before removing the bubble
+    await delay(endDelay);
 
     // Start fading out
     bubble.classList.add("fade-out");
@@ -2021,7 +2036,7 @@ function showFloatingText(playerId, text, type = "gain") {
 
     textEl.style.left = `${x}px`;
     textEl.style.top = `${y}px`;
-
+	 
     gameScreen.appendChild(textEl);
 
     // Animate with delay before removing
@@ -2128,6 +2143,8 @@ function updateOpponentCardVisibility(playerId) {
     if (playerVsAI && playerId === 0)
         return;
 
+	 triggerAudioCue('cardFlip');
+	 
     for (let i = 0; i < HANDS_REF[playerId]?.length; i++) {
         const cardRef = HANDS_REF[playerId][i];
         const cardValue = HANDS[playerId][i];
@@ -2218,8 +2235,11 @@ async function takeCardFromDeck(playerId) {
 
     // === If human player, flip to reveal ===
     if ((playerVsAI && playerId === 0) || showOpponentInfo) {
+		  triggerAudioCue(`cardToPlayer${Math.floor(Math.random() * 5) + 1}`);
         flipCardToFace(card, cardValue);
-    }
+    } else {
+		 triggerAudioCue(`cardToNPC${Math.floor(Math.random() * 2) + 1}`);
+	 }
 }
 
 async function takeCardFromPlayer(player, rank) {
@@ -2277,7 +2297,8 @@ async function animateTakingCardFromPlayer(player, rank) {
     positionPlayerHand(player); // Re-fan cards of giver
 
     const gameRect = gameScreen.getBoundingClientRect();
-
+	 let sfx_i = 1;
+	 
     for (const {
         card,
         cardValue
@@ -2318,7 +2339,8 @@ async function animateTakingCardFromPlayer(player, rank) {
 				card.classList.remove(dimStyleToRemove);
 				card.classList.add(dimStyle);
         });
-
+		  
+		  triggerAudioCue(`cardSuccess${sfx_i}`);
         // await delay(500);
 		  await waitForTransitionEnd(card);	// also nice and clean
 
@@ -2328,12 +2350,22 @@ async function animateTakingCardFromPlayer(player, rank) {
 
         positionPlayerHand(PLAYER); // Refan cards of receiver
 		  await waitForTransitionEnd(card);
+		  
+		  sfx_i++;
 
         // Flip logic
         if (playerVsAI) {
-            if (PLAYER === 0) flipCardToFace(card, cardValue);	// 🂠 Player takes card from NPC: Flip to show front
-            else if (player === 0) flipCardToFace(card);	// 🂠 NPC takes card from player: Flip to show back
-        }
+            if (PLAYER === 0) {
+					triggerAudioCue(`cardToPlayer${Math.floor(Math.random() * 5) + 1}`);
+					flipCardToFace(card, cardValue);	// 🂠 Player takes card from NPC: Flip to show front
+				}
+            else if (player === 0) {
+					triggerAudioCue(`cardToNPC${Math.floor(Math.random() * 2) + 1}`);
+					flipCardToFace(card);	// 🂠 NPC takes card from player: Flip to show back
+				}
+        } else {
+			  triggerAudioCue(`cardToNPC${Math.floor(Math.random() * 2) + 1}`);
+		  }
     }
 
     return true;
@@ -2684,6 +2716,7 @@ function handleShowGameStats() {
 }
 
 const showWinner = checkSession(async function (sessionId) {
+	 triggerAudioCue('gameOver');
     const winnerSubwindow = document.getElementById("winner-popup");
     winnerSubwindow.style.display = "";
     await delay(100); // to let display transition finish
@@ -2910,6 +2943,7 @@ function showStartButton() {
 
     startGameBtn.addEventListener("click", async() => {
         const sessionId = currentGameSessionId;
+		  triggerAudioCue('startGame');
 		  initStateBuffers(PLAYER_COUNT);
 
         startGameBtn.style.animation = "none";
@@ -2991,6 +3025,7 @@ async function setupGameScreen() {
 
     menuBtn.addEventListener('click', () => {
         gamePaused = true;
+		  triggerAudioCue('pauseGame');
         menuSubwindow.style.display = 'block';
         menuBtn.classList.add('menu-open'); // Apply glow
         requestAnimationFrame(() => {
@@ -3046,9 +3081,6 @@ bubbleIntervalId = setInterval(spawnBubble, 500); // Spawn one bubble every 0.5s
 updateVelocity();
 velocityIntervalId = setInterval(updateVelocity, 2500);
 animateFish();
-// setTimeout(() => {
-    // fishCycleController = startFishBlurCycle(); // Start the cycle once after initial delay
-// }, 8000);
 fishCycleController = startFishBlurCycle(); // Start the cycle once after initial delay
 fishingCycleController = startFishingLineCycle();
 
@@ -3231,6 +3263,8 @@ goBtn.addEventListener('click', debounce(() => {
 	  if (oldGameScreen) {
 			oldGameScreen.remove();
 	  }
+	  
+	  triggerAudioCue('createGame');
 	  setupGameScreen();
 	  // Fade out current widgets
 	  fadedScreenSwitch(optionsScreen, gameScreen);
