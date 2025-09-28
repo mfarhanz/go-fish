@@ -1,2 +1,5 @@
 # go-fish
-GoFish card game in browser
+Play Go Fish, a classic playing cards game, in the browser!
+
+
+Just a fun little experiment to brush up on JS/HTML/CSS
